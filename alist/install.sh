@@ -146,11 +146,12 @@ install_now() {
 	if [ ! -x "/koolshare/bin/jq" ]; then
   		echo_date "未安装，正在安装jq..."
   		cp -f /tmp/${module}/bin/jq /koolshare/bin/
-  		chmod 755 /koolshare/bin/jq >/dev/null 2>&1
   		echo_date "jq安装完成..."
   else
       echo_date "jq已安装，跳过..."
   fi
+  #赋权
+  chmod +x /koolshare/bin/jq >/dev/null 2>&1
   # 复制文件到目录
   cd /tmp || exit
   cp -rf /tmp/${module}/res/* /koolshare/res/
