@@ -68,7 +68,7 @@ exit_install() {
   local state=$1
   case $state in
   1)
-    echo_date "本插件适用于【koolshare merlin armv7l 384/386】和【koolshare 梅林改/官改 hnd/axhnd/axhnd.675x】固件平台！"
+    echo_date "本插件适用于【koolshare 梅林改/官改 hnd/axhnd/axhnd.675x】固件平台！"
     echo_date "你的固件平台不能安装！！!"
     echo_date "本插件支持机型/平台1：https://github.com/koolshare/armsoft#armsoft"
     echo_date "本插件支持机型/平台2：https://github.com/koolshare/rogsoft#rogsoft"
