@@ -85,7 +85,8 @@ public_access() {
 }
 
 self_upgrade() {
-  versionapi="https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info"
+  local timestamps=$(date +%s);
+  versionapi="https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
   if [ "${1}" == "yes" ]; then
     echo_date "获取最新版本中..." >>$LOGFILE
   else
@@ -108,7 +109,7 @@ self_upgrade() {
     echo_date "下载资源新版本资源..." >>$LOGFILE
     versionfile=$(echo "${version_info}" | jq .fileurl | sed 's/\"//g')
     #下载新版本安装包 目前是全量更新
-    wget --no-cache -O ${tmpDir}alist.tar.gz "${versionfile}"
+    wget --no-cache -O ${tmpDir}alist.tar.gz "${versionfile}?_=${timestamps}"
     if [ -f "${tmpDir}alist.tar.gz" ]; then
       echo_date "新版本下载成功.." >>$LOGFILE
       newFileMd5=$(md5sum ${tmpDir}alist.tar.gz | cut -d ' ' -f1)
