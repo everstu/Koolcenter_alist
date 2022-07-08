@@ -21,8 +21,77 @@
     <script type="text/javascript" src="/js/jquery.js"></script>
     <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
     <script type="text/javascript" src="/res/softcenter.js"></script>
+    <style>
+
+    body .layui-layer-lan .layui-layer-btn0 {border-color:#22ab39; background-color:#22ab39;color:#fff; background:#22ab39}
+    body .layui-layer-lan .layui-layer-btn .layui-layer-btn1 {border-color:#1678ff; background-color:#1678ff;color:#fff;}
+    body .layui-layer-lan .layui-layer-btn2 {border-color:#FF6600; background-color:#FF6600;color:#fff;}
+    body .layui-layer-lan .layui-layer-title {background: #1678ff;}
+    body .layui-layer-lan .layui-layer-btn a{margin:8px 8px 0;padding:5px 18px;}
+    body .layui-layer-lan .layui-layer-btn {text-align:center}
+
+
+    .loadingBarBlock{
+        width:740px;
+    }
+    .popup_bar_bg_ks{
+        position:fixed;
+        margin: auto;
+        top: 0;
+        left: 0;
+        width:100%;
+        height:100%;
+        z-index:99;
+        /*background-color: #444F53;*/
+        filter:alpha(opacity=90);  /*IE5、IE5.5、IE6、IE7*/
+        background-repeat: repeat;
+        visibility:hidden;
+        overflow:hidden;
+        /*background: url(/images/New_ui/login_bg.png);*/
+        background:rgba(68, 79, 83, 0.85) none repeat scroll 0 0 !important;
+        background-position: 0 0;
+        background-size: cover;
+        opacity: .94;
+    }
+    .show-btn{
+        border-radius: 5px 5px 0px 0px;
+        font-size:10pt;
+        color: #fff;
+        padding: 10px 3.75px;
+        width:13.45601%;
+        border: 1px solid #222;
+        background: linear-gradient(to bottom, #919fa4 0%, #67767d 100%);
+        border: 1px solid #91071f; /* W3C rogcss*/
+        background: none; /* W3C rogcss*/
+    }
+    .active {
+        background: linear-gradient(to bottom, #61b5de 0%, #279fd9 100%);
+        border: 1px solid #222;
+        background: linear-gradient(to bottom, #cf0a2c 0%, #91071f 100%); /* W3C rogcss*/
+        border: 1px solid #91071f; /* W3C rogcss*/
+    }
+    #log_content1 {
+        width:97%;
+        padding-left:4px;
+        padding-right:37px;
+        font-family:'Lucida Console';
+        font-size:11px;
+        color:#FFFFFF;
+        outline:none;
+        overflow-x:hidden;
+        border:0px solid #222;
+        background:#475A5F;
+        border:1px solid #91071f; /* W3C rogcss*/
+        background:transparent; /* W3C rogcss*/
+    }
+    </style>
     <script type="text/javascript">
+        var refresh_flag
+        var has_new_version = false
         var db_alist = {}
+        var changeLog
+        var count_down
+
 		function E(e) {
 			return (typeof(e) == 'string') ? document.getElementById(e) : e;
 		}
@@ -88,6 +157,8 @@
         function makeDbAlist()
         {
             db_alist['alist_https']        = E("alist_https").checked ? '1' : '0';
+            db_alist['alist_cert_file']    = E("alist_cert_file").value;
+            db_alist['alist_key_file']     = E("alist_key_file").value;
             db_alist['alist_port']         = E('alist_port').value;
             db_alist['alist_assets']       = E('alist_assets').value;
             db_alist['alist_cache_cleaup'] = E('alist_cache_cleaup').value;
@@ -110,15 +181,6 @@
                 });
             }
         }
-        function init() {
-            show_menu(menu_hook);
-			check_status();
-        }
-
-        function menu_hook(title, tab) {
-            tabtitle[tabtitle.length - 1] = new Array("", "Alist文件列表");
-            tablink[tablink.length - 1] = new Array("", "Module_alist.asp");
-        }
 
         function get_dbus_data() {
             $.ajax({
@@ -127,7 +189,6 @@
                 dataType: "json",
                 async: false,
                 success: function (data) {
-                    console.log(data);
 					db_alist = data.result[0];
                     E("alist_https").checked = db_alist["alist_https"] == "1";
 					E("alist_publicswitch").checked = db_alist["alist_publicswitch"] == "1";
@@ -143,8 +204,224 @@
                     if(db_alist["alist_assets"]){
 						E("alist_assets").value = db_alist["alist_assets"];
 					}
+                    if(db_alist["alist_assets"]){
+						E("alist_assets").value = db_alist["alist_assets"];
+					}
+                    if(db_alist["alist_cert_file"]){
+						E("alist_cert_file").value = db_alist["alist_cert_file"];
+					}
+                    if(db_alist["alist_key_file"]){
+						E("alist_key_file").value = db_alist["alist_key_file"];
+					}
                 }
             });
+        }
+
+        //检查版本更新
+        function checkVersion()
+        {
+            if(! has_new_version)
+            {
+                $('#version_update').html('检查更新中...');
+                $.ajax({
+                     type: "GET",
+                     url: "/_api/softcenter_module_alist_version",
+                     async: true,
+                     cache:false,
+                     dataType: 'json',
+                     success: function(response) {
+                         if(response['result'][0]['softcenter_module_alist_version'])
+                         {
+                            var old_version = parseFloat(response['result'][0]['softcenter_module_alist_version']);
+                            $.ajax({
+                                     type: "GET",
+                                     url: "https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info",
+                                     async: true,
+                                     cache:false,
+                                     dataType: 'json',
+                                     success: function(response) {
+                                         if(response['version'])
+                                         {
+                                            var new_version = parseFloat(response['version']);
+                                            if(new_version > old_version)
+                                            {
+                                                $('#version_update').html('<font color="yellow">有新版本:<font color="red">v' + new_version + '</font>(点击更新)</font>');
+                                                has_new_version = true;
+                                            }
+                                            else
+                                            {
+                                                $('#version_update').html('插件暂无更新');
+                                                $('#version_update').hide();
+                                                $('#version_update_1').show();
+                                            }
+                                         }
+                                         if(response['change_log'])
+                                         {
+                                            changeLog = response['change_log'];
+                                            $('#soft_change_log').click(function(){
+                                                viewChangelog();
+                                            });
+                                         }
+                                     }
+                            });
+                         }
+                         else
+                         {
+                            $('#version_update').html('插件暂无更新');
+                            $('#version_update').hide();
+                            $('#version_update_1').show();
+                         }
+                     }
+                 });
+            }
+            else
+            {
+                $('#version_update').html('插件更新中');
+                versionUpdate(0);
+            }
+
+            $('#version_update_1').hover(
+                function () {
+                    $(this).css("color",'#ff3300');
+                    $(this).html('强行更新插件');
+                },
+                function () {
+                    $(this).css("color",'#00ffe4');
+                    $(this).html('插件暂无更新');
+                }
+            );
+        }
+
+        //升级版本
+        function versionUpdate(act)
+        {
+            //act 0普通更新 1强制更新
+            var id2 = parseInt(Math.random() * 100000000);
+            var postData = {"id": id2, "method": "alist_config.sh", "params":['update', act], "fields": ""};
+            $.ajax({
+                type: "POST",
+                url: "/_api/",
+                async: true,
+                data: JSON.stringify(postData),
+                success: function(response) {
+                    if (response.result == id2){
+                        E("loading_block_spilt").style.visibility = "visible";
+                        get_realtime_log(0);
+                    }
+                }
+            });
+        }
+
+        //查看更新日志
+        function viewChangelog()
+        {
+            if(changeLog)
+            {
+                var num = 0;
+                var logHtml = '';
+                E("loading_block_spilt").style.visibility = "hidden";
+                E("ok_button").style.visibility = "visible";
+                showLoadingBar('插件更新日志');
+                var retArea = E("log_content");
+                $.each(changeLog,function (k,v){
+                    if(num >= 10)
+                    {
+                        return ;
+                    }
+                    var note = '';
+                    $.each(v.note,function(kk,vv) {
+                        note+="- " + vv + "\n";
+                    });
+                    logHtml += "版本号：v" + v.version + "\n" + "更新内容：\n" + note + "\n\n";
+                    num++;
+                });
+                retArea.value = logHtml;
+            }
+        }
+
+        //获取更新日志
+        function get_realtime_log(flag) {
+            E("ok_button").style.visibility = "hidden";
+            showLoadingBar();
+            $.ajax({
+                url: '/_temp/alist_log.txt',
+                type: 'GET',
+                async: true,
+                cache:false,
+                dataType: 'text',
+                success: function(response) {
+                    var retArea = E("log_content");
+                    if (response.search("ALSTBBACCEED") != -1) {
+                        retArea.value = response.replace("ALSTBBACCEED", "");
+                        E("ok_button").style.visibility = "visible";
+                        retArea.scrollTop = retArea.scrollHeight;
+                        if (flag == 1) {
+                            count_down = -1;
+                            refresh_flag = 0;
+                        } else {
+                            count_down = 6;
+                            refresh_flag = 1;
+                        }
+                        count_down_close();
+                        return false;
+                    }
+                    setTimeout("get_realtime_log(" + flag + ");", 200);
+                    retArea.value = response.replace("ALSTBBACCEED", " ");
+                    retArea.scrollTop = retArea.scrollHeight;
+                },
+                error: function (xhr) {
+                    E("ok_button").style.visibility = "visible";
+                    return false;
+                }
+            });
+        }
+
+        function count_down_close() {
+            if (count_down == "0") {
+                hideWBLoadingBar();
+            }
+            if (count_down < 0) {
+                E("ok_button1").value = "手动关闭"
+                return false;
+            }
+            E("ok_button1").value = "自动关闭（" + count_down + "）"
+            --count_down;
+            setTimeout("count_down_close();", 1000);
+        }
+
+        function showLoadingBar(title){
+            document.scrollingElement.scrollTop = 0;
+            E("loading_block_title").innerHTML = title ? title : "自动更新运行中，请稍后 ...";
+            E("LoadingBar").style.visibility = "visible";
+            var page_h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            var page_w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            var log_h = E("loadingBarBlock").clientHeight;
+            var log_w = E("loadingBarBlock").clientWidth;
+            var log_h_offset = (page_h - log_h) / 2;
+            var log_w_offset = (page_w - log_w) / 2 + 90;
+            $('#loadingBarBlock').offset({top: log_h_offset, left: log_w_offset});
+        }
+
+        function hideWBLoadingBar(){
+            E("loading_block_spilt").style.visibility = "hidden";
+            E("LoadingBar").style.visibility = "hidden";
+            E("ok_button").style.visibility = "hidden";
+            if (refresh_flag == "1"){
+                var newURL = location.href.split("?")[0];
+                window.history.pushState('object', document.title, newURL);
+                refreshpage();
+            }
+        }
+
+        function init() {
+            show_menu(menu_hook);
+			check_status();
+			checkVersion();
+        }
+
+        function menu_hook(title, tab) {
+            tabtitle[tabtitle.length - 1] = new Array("", "Alist文件列表");
+            tablink[tablink.length - 1] = new Array("", "Module_alist.asp");
         }
 
         $(function () {
@@ -157,17 +434,20 @@
 <body onload="init();">
     <div id="TopBanner"></div>
     <div id="Loading" class="popup_bg"></div>
-    <div id="LoadingBar" class="popup_bar_bg">
+    <div id="LoadingBar" class="popup_bar_bg_ks" style="z-index: 200;" >
         <table cellpadding="5" cellspacing="0" id="loadingBarBlock" class="loadingBarBlock" align="center">
             <tr>
                 <td height="100">
-                    <div id="loading_block3" style="margin: 10px auto; margin-left: 10px; width: 85%; font-size: 12pt;"></div>
-                    <div id="loading_block2" style="margin: 10px auto; width: 95%;"></div>
-                    <div id="log_content2" style="margin-left: 15px; margin-right: 15px; margin-top: 10px; overflow: hidden">
-                        <textarea cols="63" rows="21" wrap="on" readonly="readonly" id="log_content3" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="border: 1px solid #000; width: 99%; font-family: 'Courier New', Courier, mono; font-size: 11px; background: #000; color: #FFFFFF;"></textarea>
+                    <div id="loading_block_title" style="margin:10px auto;margin-left:10px;width:85%; font-size:12pt;"></div>
+                    <div id="loading_block_spilt" style="margin:10px 0 10px 5px;" class="loading_block_spilt">
+                        <li><font color="#ffcc00">请等待日志显示完毕，并出现自动关闭按钮！</font></li>
+                        <li><font color="#ffcc00">在此期间请不要刷新本页面，不然可能导致问题！</font></li>
                     </div>
-                    <div id="ok_button" class="apply_gen" style="background: #000; display: none;">
-                        <input id="ok_button1" class="button_gen" type="button" onclick="hideKPLoadingBar()" value="确定">
+                    <div style="margin-left:15px;margin-right:15px;margin-top:10px;overflow:hidden">
+                        <textarea cols="50" rows="25" wrap="off" readonly="readonly" id="log_content" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="border:1px solid #000;width:99%; font-family:'Lucida Console'; font-size:11px;background:transparent;color:#FFFFFF;outline: none;padding-left:3px;padding-right:22px;overflow-x:hidden"></textarea>
+                    </div>
+                    <div id="ok_button" class="apply_gen" style="background:#000;visibility:hidden;">
+                        <input id="ok_button1" class="button_gen" type="button" onclick="hideWBLoadingBar()" value="确定">
                     </div>
                 </td>
             </tr>
@@ -197,6 +477,18 @@
                                         <div style="margin: 10px 0 10px 5px;" class="splitLine"></div>
                                         <div class="SimpleNote">
                                             <a href="https://alist-doc.nn.ci/docs/intro" target="_blank"><em><u>Alist</u></em></a>&nbsp;一款支持多种存储的目录文件列表程序，支持 web 浏览与 webdav，后端基于gin，前端使用react。
+                                            <a id="soft_change_log" type="button" style="cursor:pointer" href="javascript:void(0);"><em>【<u>插件更新日志</u>】</em></a>
+                                        </div>
+                                        <div id="tablets">
+                                            <table style="margin:10px 0px 0px 0px;border-collapse:collapse" width="100%" height="37px">
+                                                <tr width="400px">
+                                                    <td colspan="4" cellpadding="0" cellspacing="0" style="padding:0" border="1" bordercolor="#000">
+                                                        <input id="show_btn1" class="show-btn show-btn1" style="cursor:pointer" type="button" value="Alist文件列表" />
+                                                        <a id="version_update" class="show-btn" style="cursor:pointer" type="button" onClick="checkVersion();">检查更新中...</a>
+                                                        <a id="version_update_1" class="show-btn" style="cursor:pointer;color:#00ffe4;display:none;" type="button" onClick="versionUpdate(1);">插件暂无更新</a>
+                                                    </td>
+                                                </tr>
+                                            </table>
                                         </div>
                                         <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
                                             <thead>
