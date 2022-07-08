@@ -152,6 +152,8 @@ install_now() {
   sleep 1
   echo_date "版本号写入完成" >>$LOGFILE
   sleep 1
+  #安装皮肤
+  install_ui
   is_enable=$(dbus get alist_enable)
   echo_date "是否启用"$is_enable >>LOGFILE
   if [ "${is_enable}" == "1" ]; then
@@ -163,7 +165,6 @@ install_now() {
     echo_date "插件未启用..." >>$LOGFILE
   fi
   sleep 1
-  install_ui
   rm -rf $tmpDir >/dev/null 2>&1
 }
 
