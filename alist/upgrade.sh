@@ -153,12 +153,13 @@ install_now() {
   echo_date "版本号写入完成" >>$LOGFILE
   sleep 1
   is_enable=$(dbus get alist_enable)
+  echo_date "是否启用"$is_enable >>LOGFILE
   if [ "${is_enable}" == "1" ]; then
     echo_date "插件重新启用插件中..." >>$LOGFILE
-    /bin/sh /koolshare/scripts/alist.sh start >/dev/null 2>&1
+    /bin/sh /koolshare/scripts/alist_config.sh start >/dev/null 2>&1
     echo_date "插件启用成功..." >>$LOGFILE
   else
-    /bin/sh /koolshare/scripts/alist.sh stop >/dev/null 2>&1
+    /bin/sh /koolshare/scripts/alist_config.sh stop >/dev/null 2>&1
     echo_date "插件未启用..." >>$LOGFILE
   fi
   sleep 1
