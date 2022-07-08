@@ -159,6 +159,11 @@ start)
     start
   fi
   ;;
+stop)
+  if [ "$alist_enable" == "1" ]; then
+    stop
+  fi
+  ;;
 
 *) #web提交
   #更新
