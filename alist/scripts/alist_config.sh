@@ -86,6 +86,7 @@ public_access() {
 
 self_upgrade() {
   local timestamps=$(date +%s);
+  local tmpDir="/tmp/upload/alist_upgrade/"
   versionapi="https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
   if [ "${1}" == "yes" ]; then
     echo_date "获取最新版本中..." >>$LOGFILE
@@ -99,7 +100,6 @@ self_upgrade() {
   old_version=$(dbus get "softcenter_module_alist_version")
   #比较版本信息 如果新版本大于当前安装版本或强制更新则执行更新脚本
   if [ $(expr "$new_version" \> "$old_version") -eq 1 ] || [ "${1}" = "yes" ]; then
-    local tmpDir="/tmp/upload/alist_upgrade/"
     mkdir -p $tmpDir
     if [ "${1}" = "yes" ]; then
       echo_date "开始强制更新,如有更新后有异常,请重新离线安装插件..." >>$LOGFILE
@@ -110,8 +110,6 @@ self_upgrade() {
     versionfile=$(echo "${version_info}" | jq .fileurl | sed 's/\"//g')
     #下载新版本安装包 目前是全量更新
     downloadUrl=${versionfile}"?_="${timestamps}
-    echo_date "下载地址：" >>$LOGFILE
-    echo_date "${downloadUrl}" >>$LOGFILE
     wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl}"
     if [ -f "${tmpDir}alist.tar.gz" ]; then
       echo_date "新版本下载成功.." >>$LOGFILE
