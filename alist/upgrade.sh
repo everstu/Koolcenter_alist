@@ -131,6 +131,7 @@ install_now() {
     /bin/sh /koolshare/scripts/alist.sh start >/dev/null 2>&1
     echo_date "插件启用成功..." >>$LOGFILE
   else
+    /bin/sh /koolshare/scripts/alist.sh stop >/dev/null 2>&1
     echo_date "插件未启用..." >>$LOGFILE
   fi
   sleep 1
