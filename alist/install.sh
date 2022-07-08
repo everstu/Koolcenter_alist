@@ -157,7 +157,7 @@ install_now() {
   cp -rf /tmp/${module}/res/* /koolshare/res/
   cp -rf /tmp/${module}/scripts/* /koolshare/scripts/
   cp -rf /tmp/${module}/webs/* /koolshare/webs/
-  cp -f /tmp/${module}/bin/* /koolshare/bin/
+  cp -f /tmp/${module}/bin/alist /koolshare/bin/
   cp -rf /tmp/${module}/uninstall.sh /koolshare/scripts/uninstall_${module}.sh
   mkdir -p /koolshare/alist/
   cp -rf /tmp/${module}/alist/* /koolshare/alist/
