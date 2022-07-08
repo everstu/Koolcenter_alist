@@ -1,5 +1,5 @@
 #!/bin/sh
-# shellcheck disable=SC2039
+
 source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 LOGFILE="/tmp/upload/alist_log.txt"
@@ -7,6 +7,28 @@ MODEL=
 UI_TYPE=ASUSWRT
 FW_TYPE_CODE=
 FW_TYPE_NAME=
+
+
+get_fw_type() {
+  local KS_TAG=$(nvram get extendno | grep koolshare)
+  if [ -d "/koolshare" ]; then
+    if [ -n "${KS_TAG}" ]; then
+      FW_TYPE_CODE="2"
+      FW_TYPE_NAME="koolshare官改固件"
+    else
+      FW_TYPE_CODE="4"
+      FW_TYPE_NAME="koolshare梅林改版固件"
+    fi
+  else
+    if [ "$(uname -o | grep Merlin)" ]; then
+      FW_TYPE_CODE="3"
+      FW_TYPE_NAME="梅林原版固件"
+    else
+      FW_TYPE_CODE="1"
+      FW_TYPE_NAME="华硕官方固件"
+    fi
+  fi
+}
 
 get_model() {
   # shellcheck disable=SC2155
@@ -42,6 +64,11 @@ get_ui_type(){
 	if [ "${MODEL}" == "GT-AC2900" ] && [ "${FW_TYPE_CODE}" == "3" -o "${FW_TYPE_CODE}" == "4" ];then
 		# GT-AC2900从386.1开始已经支持梅林固件，其UI是ASUSWRT
 		ROG_GTAC2900=0
+	fi
+	# GT-AX6000
+	if [ "${MODEL}" == "GT-AX6000" ] && [ "${FW_TYPE_CODE}" == "3" -o "${FW_TYPE_CODE}" == "4" ];then
+		# GT-AXE11000从386.5开始已经支持梅林固件，其UI是ASUSWRT
+		ROG_GTAX6000=0
 	fi
 	# GT-AX11000
 	if [ "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "GT-AX11000_BO4" ] && [ "${FW_TYPE_CODE}" == "3" -o "${FW_TYPE_CODE}" == "4" ];then
@@ -141,7 +168,7 @@ install_now() {
 
 install() {
   get_model
-  get_ui_type
+  get_fw_type
   install_now
 }
 
