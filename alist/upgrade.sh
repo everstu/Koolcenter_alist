@@ -66,21 +66,22 @@ get_ui_type() {
   fi
 }
 
+
 install_ui() {
   # intall different UI
   get_ui_type
   if [ "${UI_TYPE}" == "ROG" ]; then
     echo_date "安装ROG皮肤！"
-    sed -i '/asuscss/d' /koolshare/webs/Module_speedtestcnauto.asp >/dev/null 2>&1
+    sed -i '/asuscss/d' /koolshare/webs/Module_alist.asp >/dev/null 2>&1
   fi
   if [ "${UI_TYPE}" == "TUF" ]; then
     echo_date "安装TUF皮肤！"
-    sed -i '/asuscss/d' /koolshare/webs/Module_speedtestcnauto.asp >/dev/null 2>&1
-    sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /koolshare/webs/Module_speedtestcnauto.asp >/dev/null 2>&1
+    sed -i '/asuscss/d' /koolshare/webs/Module_alist.asp >/dev/null 2>&1
+    sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /koolshare/webs/Module_alist.asp >/dev/null 2>&1
   fi
   if [ "${UI_TYPE}" == "ASUSWRT" ]; then
     echo_date "安装ASUSWRT皮肤！"
-    sed -i '/rogcss/d' /koolshare/webs/Module_speedtestcnauto.asp >/dev/null 2>&1
+    sed -i '/rogcss/d' /koolshare/webs/Module_alist.asp >/dev/null 2>&1
   fi
 }
 

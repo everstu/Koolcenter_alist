@@ -109,7 +109,10 @@ self_upgrade() {
     echo_date "下载资源新版本资源..." >>$LOGFILE
     versionfile=$(echo "${version_info}" | jq .fileurl | sed 's/\"//g')
     #下载新版本安装包 目前是全量更新
-    wget --no-cache -O ${tmpDir}alist.tar.gz "${versionfile}?_=${timestamps}"
+    downloadUrl=${versionfile}"?_="${timestamps}
+    echo_date "下载地址：" >>$LOGFILE
+    echo_date "${downloadUrl}" >>$LOGFILE
+    wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl}"
     if [ -f "${tmpDir}alist.tar.gz" ]; then
       echo_date "新版本下载成功.." >>$LOGFILE
       newFileMd5=$(md5sum ${tmpDir}alist.tar.gz | cut -d ' ' -f1)
