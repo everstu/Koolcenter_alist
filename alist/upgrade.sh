@@ -77,7 +77,7 @@ install_now() {
   local new_version=$(cat ${tmpDir}"alist/version")
   echo_date "停止运行插件,开始处理旧文件..." >>$LOGFILE
   is_enable=$(dbus get alist_enable)
-  sh /koolshare/scripts/alist_config.sh stop >/dev/null 2>&1
+  sh /koolshare/scripts/alist_config.sh update stop >/dev/null 2>&1
   rm -rf /koolshare/scripts/alist_config.sh
   rm -rf /koolshare/webs/Module_alist.asp
   rm -rf /koolshare/res/*alist*
@@ -119,10 +119,10 @@ install_now() {
   install_ui
   if [ "${is_enable}" == "1" ]; then
     echo_date "重新启用插件中..." >>$LOGFILE
-    /bin/sh /koolshare/scripts/alist_config.sh start >/dev/null 2>&1
+    /bin/sh /koolshare/scripts/alist_config.sh update start >/dev/null 2>&1
     echo_date "插件启用成功..." >>$LOGFILE
   else
-    /bin/sh /koolshare/scripts/alist_config.sh stop >/dev/null 2>&1
+    /bin/sh /koolshare/scripts/alist_config.sh update stop >/dev/null 2>&1
   fi
   sleep 1
   rm -rf $tmpDir >/dev/null 2>&1

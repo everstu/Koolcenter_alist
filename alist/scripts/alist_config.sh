@@ -154,8 +154,10 @@ self_upgrade() {
 }
 
 case $1 in
-start)
+start) #开机启动
+  if [ "$alist_enable" == "1" ]; then
     start
+  fi
   ;;
 stop)
     stop
