@@ -60,7 +60,6 @@ auto_start() {
 }
 
 start() {
-  initData
   #先停止
   stop
   #检查是否开启公网转发
@@ -153,6 +152,8 @@ self_upgrade() {
   echo "ALSTBBACCEED" >>$LOGFILE
 }
 
+initData
+
 case $1 in
 start) #开机启动
   if [ "$alist_enable" == "1" ]; then
@@ -189,7 +190,7 @@ stop)
     alist_pid=$(pidof alist)
     text="<span style='color: red'>未启用</span>"
     pwd=''
-    port=5244
+    port=${configPort}
     if [ "$alist_pid" -gt 0 ]; then
       text="<span style='color: gold'>运行中</span>"
       pwd=$(/koolshare/bin/alist -conf ${configJson} -password)
