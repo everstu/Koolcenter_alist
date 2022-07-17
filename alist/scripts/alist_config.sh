@@ -159,7 +159,7 @@ start) #开机启动
     start
     logger "[软件中心-开机自启]: Alist自启动成功！"
   else
-    logger "[软件中心-开机自启]: Alis未开启，不自动启动！"
+    logger "[软件中心-开机自启]: Alist未开启，不自动启动！"
   fi
   ;;
 stop)
