@@ -157,6 +157,9 @@ case $1 in
 start) #开机启动
   if [ "$alist_enable" == "1" ]; then
     start
+    logger "[软件中心-开机自启]: Alist自启动成功！"
+  else
+    logger "[软件中心-开机自启]: Alis未开启，不自动启动！"
   fi
   ;;
 stop)
