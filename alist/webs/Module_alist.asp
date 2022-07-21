@@ -191,6 +191,7 @@
                 dataType: "json",
                 async: false,
                 success: function (data) {
+        	        generate_options();
 					db_alist = data.result[0];
                     E("alist_https").checked = db_alist["alist_https"] == "1";
 					E("alist_publicswitch").checked = db_alist["alist_publicswitch"] == "1";
@@ -217,7 +218,7 @@
 						E("alist_key_file").value = db_alist["alist_key_file"];
 					}
                     if(db_alist["alist_watchdog_time"]){
-						E("alist_watchdog_time").value = db_alist["alist_watchdog_time"];
+                        $("#alist_watchdog_time").val(db_alist["alist_watchdog_time"]);
 					}
                 }
             });
@@ -423,7 +424,6 @@
             show_menu(menu_hook);
 			check_status();
 			checkVersion();
-			generate_options();
         }
 
         function menu_hook(title, tab) {
@@ -564,7 +564,7 @@
                                         <table style="margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
                                             <thead>
                                             <tr>
-                                                <td colspan="2">看门狗 -- <em style="color: gold;">【看门狗<a href="./Advanced_VirtualServer_Content.asp" target="_blank"><em>每5分钟</em></a>检查一次进程是否启动，无法自定义时间。】</td>
+                                                <td colspan="2">看门狗 -- <em style="color: gold;">【看门狗会在<em>您设置的检查周期里</em></a>检查进程是否启动】</td>
                                             </tr>
                                             </thead>
                                             <tr id="dashboard">
@@ -586,7 +586,8 @@
                                             <tr id="interval_tr">
                                                 <th>检查周期</th>
                                                 <td>
-                                                    <select style="width:40px;margin:0px 0px 0px 2px;" id="alist_watchdog_time" name="alist_watchdog_time" class="input_option"></select> min
+                                                    <select style="width:40px;margin:0px 0px 0px 2px;" id="alist_watchdog_time" name="alist_watchdog_time" class="input_option">
+                                                    </select> 分钟
                                                 </td>
                                             </tr>
                                         </table>
