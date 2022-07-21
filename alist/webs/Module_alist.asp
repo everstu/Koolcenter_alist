@@ -281,7 +281,7 @@
             source_url = source_url ? source_url : 'https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info';
              $.ajax({
                  type: "GET",
-                 url: "",
+                 url: source_url,
                  async: true,
                  cache:false,
                  dataType: 'json',
