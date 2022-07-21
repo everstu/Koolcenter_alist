@@ -85,7 +85,7 @@ public_access() {
   fi
 }
 
-watchDog(){
+watchDog() {
   if [ "$alist_watchdog" == "1" ] && [ "$alist_enable" == "1" ]; then
     sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
     cru a alist_watchdog "*/${alist_watchdog_time} * * * * /bin/sh /koolshare/scripts/alist_config.sh check"
@@ -95,9 +95,10 @@ watchDog(){
 }
 
 self_upgrade() {
-  local timestamps=$(date +%s);
+  local timestamps=$(date +%s)
   local tmpDir="/tmp/upload/alist_upgrade/"
-  versionapi="https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
+  versionapi="https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
+  versionapi_1="https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
   if [ "${1}" == "yes" ]; then
     echo_date "获取最新版本中..." >>$LOGFILE
   else
@@ -105,7 +106,11 @@ self_upgrade() {
   fi
 
   #通过接口获取新版本信息
-  version_info=$(curl -s -m 30 "$versionapi")
+  version_info=$(curl -s -m 10 "$versionapi")
+  #如果通过第一个获取不到，则尝试通过第二个CDN获取信息
+  if [ "${version_info}x" == "x" ]; then
+    version_info=$(curl -s -m 10 "$versionapi_1")
+  fi
   new_version=$(echo "${version_info}" | jq .version)
   old_version=$(dbus get "softcenter_module_alist_version")
   #比较版本信息 如果新版本大于当前安装版本或强制更新则执行更新脚本
@@ -118,9 +123,16 @@ self_upgrade() {
     fi
     echo_date "下载资源新版本资源..." >>$LOGFILE
     versionfile=$(echo "${version_info}" | jq .fileurl | sed 's/\"//g')
+    versionfile_1=$(echo "${version_info}" | jq .fileurl_1 | sed 's/\"//g')
     #下载新版本安装包 目前是全量更新
     downloadUrl=${versionfile}"?_="${timestamps}
+    downloadUrl_1=${versionfile_1}"?_="${timestamps}
     wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl}"
+    #如果通过第一个下载失败，则尝试通过第二个CDN下载文件
+    if [ -f "${tmpDir}alist.tar.gz" ]; then
+      wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl_1}"
+    fi
+    #判断是否下载成功
     if [ -f "${tmpDir}alist.tar.gz" ]; then
       echo_date "新版本下载成功.." >>$LOGFILE
       newFileMd5=$(md5sum ${tmpDir}alist.tar.gz | cut -d ' ' -f1)
@@ -174,28 +186,28 @@ start) #开机启动
     logger "[软件中心-开机自启]: Alist未开启，不自动启动！"
   fi
   ;;
-check)#检查进程
-    alist_pid=$(pidof alist)
-    if [ "$alist_pid" -gt 0 ]; then
-      start
-    fi
+check) #检查进程
+  alist_pid=$(pidof alist)
+  if [ "$alist_pid" -gt 0 ]; then
+    start
+  fi
   ;;
 stop)
-    stop
+  stop
   ;;
 
 *) #web提交
   #更新
-  if [ "${2}" = "update" ];then
-      echo "" > $LOGFILE
-      http_response "$1"
-      if [ "${3}" = "1" ];then
-        #强制更新
-        self_upgrade "yes"
-      else
-        self_upgrade "no"
-      fi
-      exit
+  if [ "${2}" = "update" ]; then
+    echo "" >$LOGFILE
+    http_response "$1"
+    if [ "${3}" = "1" ]; then
+      #强制更新
+      self_upgrade "yes"
+    else
+      self_upgrade "no"
+    fi
+    exit
   fi
   #启动
   if [ "${2}" = "start" ]; then

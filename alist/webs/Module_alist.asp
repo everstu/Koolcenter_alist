@@ -8,29 +8,35 @@
     <link rel="shortcut icon" href="/res/icon-alist.png" />
     <link rel="icon" href="/res/icon-alist.png" />
     <title>软件中心 - Alist文件列表</title>
-    <link rel="stylesheet" type="text/css" href="index_style.css" />
-    <link rel="stylesheet" type="text/css" href="form_style.css" />
+    <link rel="stylesheet" type="text/css" href="index_style.css">
+    <link rel="stylesheet" type="text/css" href="form_style.css">
+    <link rel="stylesheet" type="text/css" href="usp_style.css">
     <link rel="stylesheet" type="text/css" href="css/element.css">
-    <link rel="stylesheet" type="text/css" href="res/softcenter.css">
-    <script language="JavaScript" type="text/javascript" src="/state.js"></script>
-    <script language="JavaScript" type="text/javascript" src="/help.js"></script>
-    <script language="JavaScript" type="text/javascript" src="/general.js"></script>
-    <script language="JavaScript" type="text/javascript" src="/popup.js"></script>
-    <script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
-    <script language="JavaScript" type="text/javascript" src="/validator.js"></script>
+    <link rel="stylesheet" type="text/css" href="/device-map/device-map.css">
+    <link rel="stylesheet" type="text/css" href="/js/table/table.css">
+    <link rel="stylesheet" type="text/css" href="/res/layer/theme/default/layer.css">
+    <link rel="stylesheet" type="text/css" href="/res/softcenter.css">
+    <link rel="stylesheet" type="text/css" href="/res/merlinclash.css">
+    <script type="text/javascript" src="/state.js"></script>
+    <script type="text/javascript" src="/popup.js"></script>
+    <script type="text/javascript" src="/help.js"></script>
     <script type="text/javascript" src="/js/jquery.js"></script>
-    <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
+    <script type="text/javascript" src="/general.js"></script>
+    <script type="text/javascript" language="JavaScript" src="/js/table/table.js"></script>
+    <script type="text/javascript" language="JavaScript" src="/client_function.js"></script>
+    <script type="text/javascript" src="/res/mc-menu.js"></script>
     <script type="text/javascript" src="/res/softcenter.js"></script>
+    <script type="text/javascript" src="/res/mc-tablednd.js"></script>
+    <script type="text/javascript" src="/help.js"></script>
+    <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
+    <script type="text/javascript" src="/validator.js"></script>
     <style>
-
     body .layui-layer-lan .layui-layer-btn0 {border-color:#22ab39; background-color:#22ab39;color:#fff; background:#22ab39}
     body .layui-layer-lan .layui-layer-btn .layui-layer-btn1 {border-color:#1678ff; background-color:#1678ff;color:#fff;}
     body .layui-layer-lan .layui-layer-btn2 {border-color:#FF6600; background-color:#FF6600;color:#fff;}
     body .layui-layer-lan .layui-layer-title {background: #1678ff;}
     body .layui-layer-lan .layui-layer-btn a{margin:8px 8px 0;padding:5px 18px;}
     body .layui-layer-lan .layui-layer-btn {text-align:center}
-
-
     .loadingBarBlock{
         width:740px;
     }
@@ -57,7 +63,7 @@
         border-radius: 5px 5px 0px 0px;
         font-size:10pt;
         color: #fff;
-        padding: 10px 3.75px;
+        padding: 12.5px 3.75px;
         width:13.45601%;
         border: 1px solid #222;
         background: linear-gradient(to bottom, #919fa4 0%, #67767d 100%);
@@ -139,6 +145,7 @@
 				}
 			});
 		}
+
         function start() {
             showLoading(2);
             refreshpage(2);
@@ -240,37 +247,7 @@
                          if(response['result'][0]['softcenter_module_alist_version'])
                          {
                             var old_version = parseFloat(response['result'][0]['softcenter_module_alist_version']);
-                            $.ajax({
-                                     type: "GET",
-                                     url: "https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info",
-                                     async: true,
-                                     cache:false,
-                                     dataType: 'json',
-                                     success: function(response) {
-                                         if(response['version'])
-                                         {
-                                            var new_version = parseFloat(response['version']);
-                                            if(new_version > old_version)
-                                            {
-                                                $('#version_update').html('<font color="yellow">有新版本:<font color="red">v' + new_version + '</font>(点击更新)</font>');
-                                                has_new_version = true;
-                                            }
-                                            else
-                                            {
-                                                $('#version_update').html('插件暂无更新');
-                                                $('#version_update').hide();
-                                                $('#version_update_1').show();
-                                            }
-                                         }
-                                         if(response['change_log'])
-                                         {
-                                            changeLog = response['change_log'];
-                                            $('#soft_change_log').click(function(){
-                                                viewChangelog();
-                                            });
-                                         }
-                                     }
-                            });
+                            getGhVersion(old_version);
                          }
                          else
                          {
@@ -297,6 +274,49 @@
                     $(this).html('插件暂无更新');
                 }
             );
+        }
+
+        function getGhVersion(old_version, source_url)
+        {
+            source_url = source_url ? source_url : 'https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info';
+             $.ajax({
+                 type: "GET",
+                 url: "",
+                 async: true,
+                 cache:false,
+                 dataType: 'json',
+                 success: function(response) {
+                     if(response['version'])
+                     {
+                        var new_version = parseFloat(response['version']);
+                        if(new_version > old_version)
+                        {
+                            $('#version_update').html('<font color="yellow">有新版本:<font color="red">v' + new_version + '</font>(点击更新)</font>');
+                            has_new_version = true;
+                        }
+                        else
+                        {
+                            $('#version_update').html('插件暂无更新');
+                            $('#version_update').hide();
+                            $('#version_update_1').show();
+                        }
+                     }
+                     if(response['change_log'])
+                     {
+                        changeLog = response['change_log'];
+                        $('#soft_change_log').click(function(){
+                            viewChangelog();
+                        });
+                     }
+                 },
+                 error: function(){
+                    var other_url = 'https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info';
+                    if(source_url !== other_url)
+                    {
+                        getGhVersion(old_version, other_url);
+                    }
+                 }
+            });
         }
 
         //升级版本
