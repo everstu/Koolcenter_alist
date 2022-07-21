@@ -109,6 +109,7 @@ self_upgrade() {
   version_info=$(curl -s -m 10 "$versionapi")
   #如果通过第一个获取不到，则尝试通过第二个CDN获取信息
   if [ "${version_info}x" == "x" ]; then
+    echo_date "获取失败，正在尝试从备选地址获取..." >>$LOGFILE
     version_info=$(curl -s -m 10 "$versionapi_1")
   fi
   new_version=$(echo "${version_info}" | jq .version)
@@ -130,6 +131,7 @@ self_upgrade() {
     wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl}"
     #如果通过第一个下载失败，则尝试通过第二个CDN下载文件
     if [ -f "${tmpDir}alist.tar.gz" ]; then
+      echo_date "下载失败，正在尝试从备选地址下载..." >>$LOGFILE
       wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl_1}"
     fi
     #判断是否下载成功
