@@ -517,7 +517,7 @@
                                             <table style="margin:10px 0px 0px 0px;border-collapse:collapse" width="100%" height="37px">
                                                 <tr width="400px">
                                                     <td colspan="4" cellpadding="0" cellspacing="0" style="padding:0" border="1" bordercolor="#000">
-                                                        <input id="show_btn1" class="show-btn show-btn1" style="cursor:pointer" type="button" value="Alist文件列表" />
+                                                        <a id="alist_name" class="show-btn" style="cursor:pointer" type="button">Alist文件列表</a>
                                                         <a id="version_update" class="show-btn" style="cursor:pointer" type="button" onClick="checkVersion();">检查更新中...</a>
                                                         <a id="version_update_1" class="show-btn" style="cursor:pointer;color:#00ffe4;display:none;" type="button" onClick="versionUpdate(1);">插件暂无更新</a>
                                                     </td>
