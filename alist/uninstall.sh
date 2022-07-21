@@ -9,6 +9,7 @@ rm -rf /koolshare/webs/Module_alist.asp
 rm -rf /koolshare/res/*alist*
 rm -rf /koolshare/init.d/*alist.sh
 rm -rf /koolshare/bin/alist >/dev/null 2>&1
+sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
 echo_date "插件资源文件删除成功..."
 
 rm -rf /koolshare/scripts/uninstall_alist.sh

@@ -66,9 +66,9 @@ start() {
   public_access
   #启动进程
   /koolshare/bin/alist -conf ${configJson} // >/dev/null 2>&1 &
+  dbus set alist_enable="1"
   #检查看门狗
   watchDog
-  dbus set alist_enable="1"
 }
 
 stop() {

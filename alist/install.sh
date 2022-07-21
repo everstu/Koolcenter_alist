@@ -101,6 +101,40 @@ install_ui() {
   fi
 }
 
+check_default_dbus_value(){
+  #default value
+  if [ $(dbus get alist_port)x == "x" ];then
+    dbus set alist_port="5244"
+  fi
+  if [ $(dbus get alist_assets)x == "x" ];then
+    dbus set alist_assets='https://npm.elemecdn.com/alist-web@$version/dist'
+  fi
+  if [ $(dbus get alist_cache_time)x == "x" ];then
+    dbus set alist_cache_time="60"
+  fi
+  if [ $(dbus get alist_cache_cleaup)x == "x" ];then
+    dbus set alist_cache_cleaup="120"
+  fi
+  if [ $(dbus get alist_https)x == "x" ];then
+    dbus set alist_https="0"
+  fi
+  if [ $(dbus get alist_cert_file)x == "x" ];then
+    dbus set alist_cert_file=""
+  fi
+  if [ $(dbus get alist_key_file)x == "x" ];then
+    dbus set alist_key_file=""
+  fi
+  if [ $(dbus get alist_publicswitch)x == "x" ];then
+    dbus set alist_publicswitch="0"
+  fi
+  if [ $(dbus get alist_watchdog)x == "x" ];then
+    dbus set alist_watchdog="0"
+  fi
+  if [ $(dbus get alist_enable)x == "x" ];then
+    dbus set alist_enable="0"
+  fi
+}
+
 install_now() {
   # default value
   local TITLE="Alist文件列表"
@@ -145,16 +179,8 @@ install_now() {
   dbus set softcenter_module_${module}_name="${module}"
   dbus set softcenter_module_${module}_title="${TITLE}"
   dbus set softcenter_module_${module}_description="${DESCR}"
-  #default value
-  dbus set ${module}_port="5244"
-  dbus set ${module}_assets='https://npm.elemecdn.com/alist-web@$version/dist'
-  dbus set ${module}_cache_time="60"
-  dbus set ${module}_cache_cleaup="120"
-  dbus set ${module}_https="0"
-  dbus set ${module}_cert_file=""
-  dbus set ${module}_key_file=""
-  dbus set ${module}_publicswitch="0"
-  dbus set ${module}_enable="0"
+  #检查插件默认dbus值
+  check_default_dbus_value
 
   # intall different UI
   install_ui

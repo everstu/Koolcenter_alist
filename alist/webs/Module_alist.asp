@@ -571,6 +571,12 @@
                                             </div>
                                             </td>
                                             </tr>
+                                            <tr id="interval_tr">
+                                                <th>检查周期</th>
+                                                <td>
+                                                    <select style="width:40px;margin:0px 0px 0px 2px;" id="alist_watchdog_time" name="alist_watchdog_time" class="input_option"></select> min
+                                                </td>
+                                            </tr>
                                         </table>
                                         <table style="margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" id="filebrowser_switch_table">
 
