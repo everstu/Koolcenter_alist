@@ -130,7 +130,7 @@ self_upgrade() {
     downloadUrl_1=${versionfile_1}"?_="${timestamps}
     wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl}"
     #如果通过第一个下载失败，则尝试通过第二个CDN下载文件
-    if [ -f "${tmpDir}alist.tar.gz" ]; then
+    if [ ! -f "${tmpDir}alist.tar.gz" ]; then
       echo_date "下载失败，正在尝试从备选地址下载..." >>$LOGFILE
       wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl_1}"
     fi
