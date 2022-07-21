@@ -97,8 +97,9 @@ watchDog() {
 self_upgrade() {
   local timestamps=$(date +%s)
   local tmpDir="/tmp/upload/alist_upgrade/"
-  versionapi="https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
-  versionapi_1="https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
+#  versionapi="https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
+  versionapi="https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info"
+  versionapi_1="https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info"
   if [ "${1}" == "yes" ]; then
     echo_date "获取最新版本中..." >>$LOGFILE
   else
@@ -126,8 +127,9 @@ self_upgrade() {
     versionfile=$(echo "${version_info}" | jq .fileurl | sed 's/\"//g')
     versionfile_1=$(echo "${version_info}" | jq .fileurl_1 | sed 's/\"//g')
     #下载新版本安装包 目前是全量更新
-    downloadUrl=${versionfile}"?_="${timestamps}
-    downloadUrl_1=${versionfile_1}"?_="${timestamps}
+#    downloadUrl=${versionfile}"?_="${timestamps}
+    downloadUrl=${versionfile}
+    downloadUrl_1=${versionfile_1}
     wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl}"
     #如果通过第一个下载失败，则尝试通过第二个CDN下载文件
     if [ ! -f "${tmpDir}alist.tar.gz" ]; then
