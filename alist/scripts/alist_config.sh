@@ -88,7 +88,7 @@ public_access() {
 watchDog(){
   if [ "$alist_watchdog" == "1" ] && [ "$alist_enable" == "1" ]; then
     sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
-    cru a alist_watchdog "*/5 * * * * /bin/sh /koolshare/scripts/alist_config.sh check"
+    cru a alist_watchdog "*/${alist_watchdog_time} * * * * /bin/sh /koolshare/scripts/alist_config.sh check"
   else
     sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
   fi

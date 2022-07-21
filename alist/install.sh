@@ -133,6 +133,9 @@ check_default_dbus_value(){
   if [ $(dbus get alist_enable)x == "x" ];then
     dbus set alist_enable="0"
   fi
+  if [ $(dbus get alist_watchdog_time)x == "x" ];then
+    dbus set alist_watchdog_time="3"
+  fi
 }
 
 install_now() {

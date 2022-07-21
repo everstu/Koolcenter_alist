@@ -156,15 +156,16 @@
 
         function makeDbAlist()
         {
-            db_alist['alist_https']        = E("alist_https").checked ? '1' : '0';
-            db_alist['alist_cert_file']    = E("alist_cert_file").value;
-            db_alist['alist_key_file']     = E("alist_key_file").value;
-            db_alist['alist_port']         = E('alist_port').value;
-            db_alist['alist_assets']       = E('alist_assets').value;
-            db_alist['alist_cache_cleaup'] = E('alist_cache_cleaup').value;
-            db_alist['alist_cache_time']   = E('alist_cache_time').value;
-            db_alist['alist_publicswitch'] = E("alist_publicswitch").checked ? '1' : '0';
-            db_alist['alist_watchdog']     = E("alist_watchdog").checked ? '1' : '0';
+            db_alist['alist_https']          = E("alist_https").checked ? '1' : '0';
+            db_alist['alist_cert_file']      = E("alist_cert_file").value;
+            db_alist['alist_key_file']       = E("alist_key_file").value;
+            db_alist['alist_port']           = E('alist_port').value;
+            db_alist['alist_assets']         = E('alist_assets').value;
+            db_alist['alist_cache_cleaup']   = E('alist_cache_cleaup').value;
+            db_alist['alist_cache_time']     = E('alist_cache_time').value;
+            db_alist['alist_publicswitch']   = E("alist_publicswitch").checked ? '1' : '0';
+            db_alist['alist_watchdog']       = E("alist_watchdog").checked ? '1' : '0';
+            db_alist['alist_watchdog_time']  = E("alist_watchdog_time").value;
         }
 
         function close() {
@@ -214,6 +215,9 @@
 					}
                     if(db_alist["alist_key_file"]){
 						E("alist_key_file").value = db_alist["alist_key_file"];
+					}
+                    if(db_alist["alist_watchdog_time"]){
+						E("alist_watchdog_time").value = db_alist["alist_watchdog_time"];
 					}
                 }
             });
@@ -419,6 +423,7 @@
             show_menu(menu_hook);
 			check_status();
 			checkVersion();
+			generate_options();
         }
 
         function menu_hook(title, tab) {
@@ -431,6 +436,13 @@
             $("#btn_Close").click(close);
             get_dbus_data();
         });
+
+        function generate_options(){
+        	for(var i = 2; i < 60; i++) {
+        		$("#alist_watchdog_time").append("<option value='"  + i + "'>" + i + "</option>");
+        		$("#alist_watchdog_time").val(3);
+        	}
+        }
     </script>
 </head>
 <body onload="init();">
