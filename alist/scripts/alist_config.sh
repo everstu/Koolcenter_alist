@@ -66,6 +66,8 @@ start() {
   public_access
   #启动进程
   /koolshare/bin/alist -conf ${configJson} // >/dev/null 2>&1 &
+  #检查看门狗
+  watchDog
   dbus set alist_enable="1"
 }
 
@@ -80,6 +82,15 @@ public_access() {
     iptables -D INPUT -p tcp --dport ${alist_port} -j ACCEPT
   else
     iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT
+  fi
+}
+
+watchDog(){
+  if [ "$alist_watchdog" == "1" ] && [ "$alist_enable" == "1" ]; then
+    sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
+    cru a alist_watchdog "*/5 * * * * /bin/sh /koolshare/scripts/alist_config.sh check"
+  else
+    sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
   fi
 }
 
@@ -160,6 +171,12 @@ start) #开机启动
     start
   fi
   ;;
+check)#检查进程
+    alist_pid=$(pidof alist)
+    if [ "$alist_pid" -gt 0 ]; then
+      start
+    fi
+  ;;
 stop)
     stop
   ;;
@@ -175,7 +192,7 @@ stop)
       else
         self_upgrade "no"
       fi
-      exit;
+      exit
   fi
   #启动
   if [ "${2}" = "start" ]; then
