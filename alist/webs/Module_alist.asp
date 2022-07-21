@@ -584,11 +584,11 @@
                                         <table style="margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
                                             <thead>
                                             <tr>
-                                                <td colspan="2">看门狗 -- <em style="color: gold;">【看门狗会在<em>您设置的检查周期里</em></a>检查进程是否启动】</td>
+                                                <td colspan="2">看门狗设定 -- <em style="color: gold;">【看门狗会在<em>您设置的检查周期里</em></a>检查进程是否启动】</td>
                                             </tr>
                                             </thead>
                                             <tr id="dashboard">
-                                            <th>是否开启看门狗</th>
+                                            <th>开启看门狗</th>
                                             <td colspan="2">
                                                 <div class="switch_field" style="display:table-cell;float: left;">
                                                 <label for="alist_watchdog">
