@@ -60,13 +60,14 @@ auto_start() {
 }
 
 start() {
-  initData
   #先停止
   stop
   #检查是否开启公网转发
   public_access
   #启动进程
   /koolshare/bin/alist -conf ${configJson} // >/dev/null 2>&1 &
+  #检查看门狗
+  watchDog
   dbus set alist_enable="1"
 }
 
@@ -81,6 +82,15 @@ public_access() {
     iptables -D INPUT -p tcp --dport ${alist_port} -j ACCEPT
   else
     iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT
+  fi
+}
+
+watchDog(){
+  if [ "$alist_watchdog" == "1" ] && [ "$alist_enable" == "1" ]; then
+    sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
+    cru a alist_watchdog "*/5 * * * * /bin/sh /koolshare/scripts/alist_config.sh check"
+  else
+    sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
   fi
 }
 
@@ -153,6 +163,8 @@ self_upgrade() {
   echo "ALSTBBACCEED" >>$LOGFILE
 }
 
+initData
+
 case $1 in
 start) #开机启动
   if [ "$alist_enable" == "1" ]; then
@@ -161,6 +173,12 @@ start) #开机启动
   else
     logger "[软件中心-开机自启]: Alist未开启，不自动启动！"
   fi
+  ;;
+check)#检查进程
+    alist_pid=$(pidof alist)
+    if [ "$alist_pid" -gt 0 ]; then
+      start
+    fi
   ;;
 stop)
     stop
@@ -177,7 +195,7 @@ stop)
       else
         self_upgrade "no"
       fi
-      exit;
+      exit
   fi
   #启动
   if [ "${2}" = "start" ]; then
@@ -192,7 +210,7 @@ stop)
     alist_pid=$(pidof alist)
     text="<span style='color: red'>未启用</span>"
     pwd=''
-    port=5244
+    port=${configPort}
     if [ "$alist_pid" -gt 0 ]; then
       text="<span style='color: gold'>运行中</span>"
       pwd=$(/koolshare/bin/alist -conf ${configJson} -password)

@@ -164,6 +164,7 @@
             db_alist['alist_cache_cleaup'] = E('alist_cache_cleaup').value;
             db_alist['alist_cache_time']   = E('alist_cache_time').value;
             db_alist['alist_publicswitch'] = E("alist_publicswitch").checked ? '1' : '0';
+            db_alist['alist_watchdog']     = E("alist_watchdog").checked ? '1' : '0';
         }
 
         function close() {
@@ -192,6 +193,7 @@
 					db_alist = data.result[0];
                     E("alist_https").checked = db_alist["alist_https"] == "1";
 					E("alist_publicswitch").checked = db_alist["alist_publicswitch"] == "1";
+					E("alist_watchdog").checked = db_alist["alist_watchdog"] == "1";
 					if(db_alist["alist_cache_time"]){
 						E("alist_cache_time").value = db_alist["alist_cache_time"];
 					}
@@ -536,6 +538,29 @@
                                                 <div class="switch_field" style="display:table-cell;float: left;">
                                                 <label for="alist_publicswitch">
                                                     <input id="alist_publicswitch" type="checkbox" name="dashboard" class="switch" style="display: none;">
+                                                    <div class="switch_container" >
+                                                        <div class="switch_bar"></div>
+                                                        <div class="switch_circle transition_style">
+                                                            <div></div>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                            </td>
+                                            </tr>
+                                        </table>
+                                        <table style="margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
+                                            <thead>
+                                            <tr>
+                                                <td colspan="2">看门狗 -- <em style="color: gold;">【看门狗<a href="./Advanced_VirtualServer_Content.asp" target="_blank"><em>每5分钟</em></a>检查一次进程是否启动，无法自定义时间。】</td>
+                                            </tr>
+                                            </thead>
+                                            <tr id="dashboard">
+                                            <th>是否开启看门狗</th>
+                                            <td colspan="2">
+                                                <div class="switch_field" style="display:table-cell;float: left;">
+                                                <label for="alist_watchdog">
+                                                    <input id="alist_watchdog" type="checkbox" name="dashboard" class="switch" style="display: none;">
                                                     <div class="switch_container" >
                                                         <div class="switch_bar"></div>
                                                         <div class="switch_circle transition_style">
