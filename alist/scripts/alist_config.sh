@@ -33,11 +33,17 @@ initData() {
   if [ "${alist_cache_cleaup}Z" != "Z" ]; then
     configCacheCleaup=$alist_cache_cleaup
   fi
-  #初始化缓存清除时间
+  #初始化静态资源位置
   # shellcheck disable=SC2154
   if [ "${configAssets}Z" == "Z" ]; then
-    configAssets='https://npm.elemecdn.com/alist-web@$version/dist'
-    dbus set alist_assets='https://npm.elemecdn.com/alist-web@$version/dist'
+    configAssets='/'
+    dbus set alist_assets='/'
+  else
+    #检测是否为饿了么CDN如果为饿了么CDN则强行替换成本地静态资源
+    if [ $(echo $configAssets | grep "https://npm.elemecdn.com")Z != "Z" ];then
+      configAssets='/'
+      dbus set alist_assets='/'
+    fi
   fi
   #初始化https
   # shellcheck disable=SC2154

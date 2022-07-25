@@ -107,7 +107,7 @@ check_default_dbus_value(){
     dbus set alist_port="5244"
   fi
   if [ $(dbus get alist_assets)x == "x" ];then
-    dbus set alist_assets='https://npm.elemecdn.com/alist-web@$version/dist'
+    dbus set alist_assets='/'
   fi
   if [ $(dbus get alist_cache_time)x == "x" ];then
     dbus set alist_cache_time="60"
