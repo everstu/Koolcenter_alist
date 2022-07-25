@@ -7,6 +7,7 @@ eval $(dbus export alist_)
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 alistBaseDir="/koolshare/alist/"
 configJson=${alistBaseDir}config.json
+alistVersion=${alistBaseDir}alist.version
 configPort=5244                       #监听端口
 configAssets=$(dbus get alist_assets) #资源文件地址
 configCacheTime=60                    #缓存时间 单位分钟
@@ -44,6 +45,10 @@ initData() {
     configHttps=true
     configCertFile=$alist_cert_file
     configKeyFile=$alist_key_file
+  fi
+  #优化版本获取速度
+  if [ ! -f $alistVersion ] || [ $(cat $alistVersion)x == "x" ];then
+    /koolshare/bin/alist -version > $alistVersion
   fi
   auto_start
   makeConfig
@@ -232,8 +237,8 @@ stop)
     if [ "$alist_pid" -gt 0 ]; then
       text="<span style='color: gold'>运行中</span>"
       pwd=$(/koolshare/bin/alist -conf ${configJson} -password)
-      binVersion=$(/koolshare/bin/alist -version | awk '/Version:/{print $2}' | head -n 2 | tail -n 1)
-      webVersion=$(/koolshare/bin/alist -version | awk '/Version:/{print $2}' | tail -n 1)
+      binVersion=$(cat $alistVersion | awk '/Version:/{print $2}' | head -n 2 | tail -n 1)
+      webVersion=$(cat $alistVersion | awk '/Version:/{print $2}' | tail -n 1)
     fi
     http_response "$text@$pwd@$port@$binVersion@$webVersion"
     exit

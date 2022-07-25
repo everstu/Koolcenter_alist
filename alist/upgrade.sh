@@ -82,6 +82,8 @@ install_now() {
   rm -rf /koolshare/webs/Module_alist.asp
   rm -rf /koolshare/res/*alist*
   rm -rf /koolshare/init.d/*alist.sh
+  #重新安装删除版本缓存信息
+  rm -rf /koolshare/alist/alist.version >/dev/null 2>&1
   sleep 1
   # 检查jq是否安装
   echo_date "检查是否安装jq..." >>$LOGFILE

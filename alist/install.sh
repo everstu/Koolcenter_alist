@@ -155,6 +155,8 @@ install_now() {
   else
       echo_date "jq已安装，跳过..."
   fi
+  #重新安装删除版本缓存信息
+  rm -rf /koolshare/alist/alist.version >/dev/null 2>&1
   #赋权
   chmod +x /koolshare/bin/jq >/dev/null 2>&1
   # 复制文件到目录
