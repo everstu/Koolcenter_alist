@@ -115,6 +115,14 @@
 					E("alist_status").innerHTML = arr[0];
 					var alistPwd =  arr[1].replace('your password: ','');
 					E("alist_pwd").innerHTML = alistPwd ? alistPwd : '<span style="color: red">未启用</span>';
+					var alistVersionInfo = '<span style="color: red">未启用</span>'
+					if(arr[3] && arr[4])
+					{
+					    alistVersionInfo = '二进制：' + arr[3] + '<br>网　页：' + arr[4];
+					}
+					E('alist_version').innerHTML = alistVersionInfo;
+
+
 					E("fileb").innerHTML = '未启用';
 					if(alistPwd)
 					{
@@ -552,7 +560,11 @@
                                                 <td colspan="2"  id="alist_status"></td>
                                             </tr>
                                             <tr>
-                                                <th >访问</th>
+                                                <th >版本</th>
+                                                <td colspan="2"  id="alist_version"></td>
+                                            </tr>
+                                            <tr>
+                                                <th >面板</th>
                                                 <td colspan="2"  id="alist_access">
                                                     <a type="button" style="vertical-align: middle; cursor:pointer;" id="fileb" class="ks_btn" target="_blank" >访问 Alist 面板</a>
                                                 </td>

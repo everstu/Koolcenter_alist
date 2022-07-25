@@ -226,12 +226,16 @@ stop)
     alist_pid=$(pidof alist)
     text="<span style='color: red'>未启用</span>"
     pwd=''
+    webVersion=''
+    binVersion=''
     port=${configPort}
     if [ "$alist_pid" -gt 0 ]; then
       text="<span style='color: gold'>运行中</span>"
       pwd=$(/koolshare/bin/alist -conf ${configJson} -password)
+      binVersion=$(/koolshare/bin/alist -version | awk '/Version:/{print $2}' | head -n 2 | tail -n 1)
+      webVersion=$(/koolshare/bin/alist -version | awk '/Version:/{print $2}' | tail -n 1)
     fi
-    http_response "$text@$pwd@$port"
+    http_response "$text@$pwd@$port@$binVersion@$webVersion"
     exit
   fi
   http_response $1
