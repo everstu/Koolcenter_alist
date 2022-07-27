@@ -40,7 +40,7 @@ initData() {
     dbus set alist_assets='/'
   else
     #检测是否为饿了么CDN如果为饿了么CDN则强行替换成本地静态资源
-    if [ $(echo $configAssets | grep "https://npm.elemecdn.com")Z != "Z" ];then
+    if [ $(echo $configAssets | grep "https://npm.elemecdn.com")Z != "Z" ]; then
       configAssets='/'
       dbus set alist_assets='/'
     fi
@@ -53,8 +53,8 @@ initData() {
     configKeyFile=$alist_key_file
   fi
   #优化版本获取速度
-  if [ ! -f $alistVersion ] || [ $(cat $alistVersion)x == "x" ];then
-    /koolshare/bin/alist -version > $alistVersion
+  if [ ! -f $alistVersion ] || [ $(cat $alistVersion)x == "x" ]; then
+    /koolshare/bin/alist -version >$alistVersion
   fi
   auto_start
   makeConfig
@@ -89,10 +89,17 @@ stop() {
 }
 
 public_access() {
+  checkiptables=$(iptables -L | grep "${alist_port}")
   if [ "$alist_publicswitch" == "0" ] || [ "$1" == "stop" ]; then
-    iptables -D INPUT -p tcp --dport ${alist_port} -j ACCEPT
+    #检查IPtables是否写入，如果未写入就不删除
+    if [ "$checkiptables"x != "x" ]; then
+      iptables -D INPUT -p tcp --dport ${alist_port} -j ACCEPT
+    fi
   else
-    iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT
+    #检查IPtables是否写入，如果已写入就不重复写入
+    if [ "$checkiptables"x == "x" ]; then
+      iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT
+    fi
   fi
 }
 
@@ -108,7 +115,7 @@ watchDog() {
 self_upgrade() {
   local timestamps=$(date +%s)
   local tmpDir="/tmp/upload/alist_upgrade/"
-#  versionapi="https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
+  #  versionapi="https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info?_="${timestamps}
   versionapi="https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info"
   versionapi_1="https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info"
   if [ "${1}" == "yes" ]; then
@@ -138,7 +145,7 @@ self_upgrade() {
     versionfile=$(echo "${version_info}" | jq .fileurl | sed 's/\"//g')
     versionfile_1=$(echo "${version_info}" | jq .fileurl_1 | sed 's/\"//g')
     #下载新版本安装包 目前是全量更新
-#    downloadUrl=${versionfile}"?_="${timestamps}
+    #    downloadUrl=${versionfile}"?_="${timestamps}
     downloadUrl=${versionfile}
     downloadUrl_1=${versionfile_1}
     wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl}"
