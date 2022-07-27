@@ -205,6 +205,7 @@ check) #检查进程
   alist_pid=$(pidof alist)
   if [ "$alist_pid" -gt 0 ]; then
     start
+    logger "[软件中心-Alist看门狗]: Alist自启动成功！"
   fi
   ;;
 stop)
