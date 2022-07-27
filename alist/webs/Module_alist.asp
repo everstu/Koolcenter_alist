@@ -330,20 +330,31 @@
         //升级版本
         function versionUpdate(act)
         {
-            //act 0普通更新 1强制更新
-            var id2 = parseInt(Math.random() * 100000000);
-            var postData = {"id": id2, "method": "alist_config.sh", "params":['update', act], "fields": ""};
-            $.ajax({
-                type: "POST",
-                url: "/_api/",
-                async: true,
-                data: JSON.stringify(postData),
-                success: function(response) {
-                    if (response.result == id2){
-                        E("loading_block_spilt").style.visibility = "visible";
-                        get_realtime_log(0);
-                    }
-                }
+            require(['/res/layer/layer.js'], function(layer) {
+                layer.confirm('<li>在线更新需要jffs空间约为20M，请确认空间足够！</li>', {
+                    shade: 0.8,
+                }, function(index) {
+                    //act 0普通更新 1强制更新
+                    var id2 = parseInt(Math.random() * 100000000);
+                    var postData = {"id": id2, "method": "alist_config.sh", "params":['update', act], "fields": ""};
+                    $.ajax({
+                        type: "POST",
+                        url: "/_api/",
+                        async: true,
+                        data: JSON.stringify(postData),
+                        success: function(response) {
+                            if (response.result == id2){
+                                E("loading_block_spilt").style.visibility = "visible";
+                                get_realtime_log(0);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                    return true;
+                }, function(index) {
+                    layer.close(index);
+                    return false;
+                });
             });
         }
 
