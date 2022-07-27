@@ -331,7 +331,7 @@
         function versionUpdate(act)
         {
             require(['/res/layer/layer.js'], function(layer) {
-                layer.confirm('<li>在线更新需要jffs空间约为20M，请确认空间足够！</li>', {
+                layer.confirm('在线更新功能需要路由器剩余磁盘空间较大，如在线更新失败您可以删除插件后重新离线安装。', {
                     shade: 0.8,
                 }, function(index) {
                     //act 0普通更新 1强制更新
