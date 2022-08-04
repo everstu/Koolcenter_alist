@@ -79,14 +79,14 @@ start() {
   /koolshare/bin/alist -conf ${configJson} // >/dev/null 2>&1 &
   dbus set alist_enable="1"
   #检查看门狗
-  watchDog
+  watchDog open
 }
 
 stop() {
   killall alist >/dev/null 2>&1
   public_access stop
   dbus set alist_enable="0"
-  watchDog
+  watchDog stop
 }
 
 public_access() {
@@ -105,11 +105,9 @@ public_access() {
 }
 
 watchDog() {
-  if [ "$alist_watchdog" == "1" ] && [ "$alist_enable" == "1" ]; then
-    sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
+  sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/*
+  if [ "$alist_watchdog" == "1" ] && [ "$1" == "open" ]; then
     cru a alist_watchdog "*/${alist_watchdog_time} * * * * /bin/sh /koolshare/scripts/alist_config.sh check"
-  else
-    sed -i '/alist_watchdog/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
   fi
 }
 
@@ -211,7 +209,7 @@ start) #开机启动
   ;;
 check) #检查进程
   alist_pid=$(pidof alist)
-  if [ "$alist_pid" -gt 0 ]; then
+  if [ "$alist_pid"Z == "Z"  ]; then
     start
     logger "[软件中心-Alist看门狗]: Alist自启动成功！"
   fi
