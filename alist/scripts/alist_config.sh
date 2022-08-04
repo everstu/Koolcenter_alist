@@ -53,7 +53,7 @@ initData() {
     configKeyFile=$alist_key_file
   fi
   #优化版本获取速度
-  if [ ! -f $alistVersion ] || [ $(cat $alistVersion)x == "x" ]; then
+  if [ ! -f "$alistVersion" ] || [ "`cat $alistVersion`Z" == "Z" ]; then
     /koolshare/bin/alist -version >$alistVersion
   fi
   auto_start
