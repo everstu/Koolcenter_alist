@@ -86,6 +86,7 @@ stop() {
   killall alist >/dev/null 2>&1
   public_access stop
   dbus set alist_enable="0"
+  watchDog
 }
 
 public_access() {
