@@ -130,68 +130,108 @@ self_upgrade() {
     echo_date "获取失败，正在尝试从备选地址获取..." >>$LOGFILE
     version_info=$(curl -s -m 10 "$versionapi_1")
   fi
-  new_version=$(echo "${version_info}" | jq .version)
-  old_version=$(dbus get "softcenter_module_alist_version")
-  #比较版本信息 如果新版本大于当前安装版本或强制更新则执行更新脚本
-  if [ $(expr "$new_version" \> "$old_version") -eq 1 ] || [ "${1}" = "yes" ]; then
-    mkdir -p $tmpDir
-    if [ "${1}" = "yes" ]; then
-      echo_date "开始强制更新,如有更新后有异常,请重新离线安装插件..." >>$LOGFILE
-    else
-      echo_date "新版本:${new_version}已发布,开始更新..." >>$LOGFILE
-    fi
-    echo_date "下载资源新版本资源..." >>$LOGFILE
-    versionfile=$(echo "${version_info}" | jq .fileurl | sed 's/\"//g')
-    versionfile_1=$(echo "${version_info}" | jq .fileurl_1 | sed 's/\"//g')
-    #下载新版本安装包 目前是全量更新
-    #    downloadUrl=${versionfile}"?_="${timestamps}
-    downloadUrl=${versionfile}
-    downloadUrl_1=${versionfile_1}
-    wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl}"
-    #如果通过第一个下载失败，则尝试通过第二个CDN下载文件
-    if [ ! -f "${tmpDir}alist.tar.gz" ]; then
-      echo_date "下载失败，正在尝试从备选地址下载..." >>$LOGFILE
-      wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl_1}"
-    fi
-    #判断是否下载成功
-    if [ -f "${tmpDir}alist.tar.gz" ]; then
-      echo_date "新版本下载成功.." >>$LOGFILE
-      newFileMd5=$(md5sum ${tmpDir}alist.tar.gz | cut -d ' ' -f1)
-      echo_date "文件md5:${newFileMd5}" >>$LOGFILE
-      checkMd5=$(echo "${version_info}" | jq .md5sum | sed 's/\"//g')
-      echo_date "校验更新文件md5中..." >>$LOGFILE
-      #校验MD5是否为打包MD5
-      if [ "$newFileMd5" = "$checkMd5" ]; then
-        echo_date "文件md5校验通过,开始更新插件..." >>$LOGFILE
-        sleep 1
-        echo_date "尝试解压安装包..." >>$LOGFILE
-        sleep 1
-        cd $tmpDir || exit
-        #解压到临时文件夹
-        tar -zxvf ${tmpDir}alist.tar.gz
-        echo_date "安装包解压成功,执行更新脚本..." >>$LOGFILE
-        sleep 1
-        #升级脚本赋权
-        chmod +x "${tmpDir}alist/upgrade.sh" >/dev/null 2>&1
-        #执行升级脚本
-        start-stop-daemon -S -q -x "${tmpDir}alist/upgrade.sh" 2>&1
-        sleep 1
-        if [ "$?" != "0" ]; then
-          rm -rf $tmpDir >/dev/null 2>&1
-          echo_date "更新脚本运行出错,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
+  mkdir -p $tmpDir
+  if [ "${2}" = "plugin" ];then
+    new_version=$(echo "${version_info}" | jq .version)
+    old_version=$(dbus get "softcenter_module_alist_version")
+    #比较版本信息 如果新版本大于当前安装版本或强制更新则执行更新脚本
+    if [ $(expr "$new_version" \> "$old_version") -eq 1 ] || [ "${1}" = "yes" ]; then
+      if [ "${1}" = "yes" ]; then
+        echo_date "开始强制更新,如有更新后有异常,请重新离线安装插件..." >>$LOGFILE
+      else
+        echo_date "新版本:${new_version}已发布,开始更新..." >>$LOGFILE
+      fi
+      echo_date "下载资源新版本资源..." >>$LOGFILE
+      echo_date "资源文件较大，请耐心等待..." >>$LOGFILE
+      versionfile=$(echo "${version_info}" | jq .fileurl | sed 's/\"//g')
+      versionfile_1=$(echo "${version_info}" | jq .fileurl_1 | sed 's/\"//g')
+      #下载新版本安装包 目前是全量更新
+      #    downloadUrl=${versionfile}"?_="${timestamps}
+      downloadUrl=${versionfile}
+      downloadUrl_1=${versionfile_1}
+      wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl}"
+      #如果通过第一个下载失败，则尝试通过第二个CDN下载文件
+      if [ ! -f "${tmpDir}alist.tar.gz" ]; then
+        echo_date "下载失败，正在尝试从备选地址下载..." >>$LOGFILE
+        wget --no-cache -O ${tmpDir}alist.tar.gz "${downloadUrl_1}"
+      fi
+      #判断是否下载成功
+      if [ -f "${tmpDir}alist.tar.gz" ]; then
+        echo_date "新版本下载成功.." >>$LOGFILE
+        newFileMd5=$(md5sum ${tmpDir}alist.tar.gz | cut -d ' ' -f1)
+        echo_date "文件md5:${newFileMd5}" >>$LOGFILE
+        checkMd5=$(echo "${version_info}" | jq .md5sum | sed 's/\"//g')
+        echo_date "校验更新文件md5中..." >>$LOGFILE
+        #校验MD5是否为打包MD5
+        if [ "$newFileMd5" = "$checkMd5" ]; then
+          echo_date "文件md5校验通过,开始更新插件..." >>$LOGFILE
+          sleep 1
+          echo_date "尝试解压安装包..." >>$LOGFILE
+          sleep 1
+          cd $tmpDir || exit
+          #解压到临时文件夹
+          tar -zxvf ${tmpDir}alist.tar.gz
+          echo_date "安装包解压成功,执行更新脚本..." >>$LOGFILE
+          sleep 1
+          #升级脚本赋权
+          chmod +x "${tmpDir}alist/upgrade.sh" >/dev/null 2>&1
+          #执行升级脚本
+          start-stop-daemon -S -q -x "${tmpDir}alist/upgrade.sh" 2>&1
+          sleep 1
+          if [ "$?" != "0" ]; then
+            rm -rf $tmpDir >/dev/null 2>&1
+            echo_date "更新脚本运行出错,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
+          else
+            echo_date "更新完成,享受新版本吧~~~" >>$LOGFILE
+          fi
         else
-          echo_date "更新完成,享受新版本吧~~~" >>$LOGFILE
+          echo_date "文件md5校验失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
         fi
       else
-        echo_date "文件md5校验失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
+        echo_date "新版本资源下载失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
       fi
+      #删除安装文件
+      rm -rf $tmpDir >/dev/null 2>&1
+    else
+      echo_date "当前版本:v${old_version}是最新版本,无需更新!" >>$LOGFILE
+    fi
+  else
+    if [ "${1}" = "yes" ]; then
+      echo_date "开始强制更新二进制,如有更新后有异常,请重新离线安装插件..." >>$LOGFILE
+    fi
+    echo_date "下载二进制中..." >>$LOGFILE
+    echo_date "资源文件较大，请耐心等待..." >>$LOGFILE
+    versionbinfilepath=$(echo "${version_info}" | jq .bin_filepath | sed 's/\"//g')
+    downloadUrl="https://ghproxy.com/https://github.com/"${versionbinfilepath}
+    downloadUrl_1="https://raw.githubusercontents.com/"${versionbinfilepath}
+    wget --no-cache -O ${tmpDir}alist "${downloadUrl}"
+    #如果通过第一个下载失败，则尝试通过第二个CDN下载文件
+    if [ ! -f "${tmpDir}alist" ]; then
+      echo_date "下载失败，正在尝试从备选地址下载..." >>$LOGFILE
+      wget --no-cache -O ${tmpDir}alist "${downloadUrl_1}"
+    fi
+    #判断是否下载成功
+    if [ -f "${tmpDir}alist" ]; then
+      #删除旧的二进制
+      rm -rf /koolshare/bin/alist >/dev/null 2>&1
+      #把新二进制移动到目录下
+      mv "${tmpDir}alist" /koolshare/bin/alist >/dev/null 2>&1
+      #给执行权限
+      chmod +x /koolshare/bin/alist >/dev/null 2>&1
+      echo_date "二进制更新完成..." >>$LOGFILE
+      if [ "$alist_enable" == "1" ]; then
+        echo_date "插件已开启，重启插件中..." >>$LOGFILE
+        sleep 1
+        start
+      else
+        echo_date "未开启插件，请手动开启插件..." >>$LOGFILE
+      fi
+      echo_date "更新完成,享受新版本吧~~~" >>$LOGFILE
+      #删除安装文件
+      rm -rf $tmpDir >/dev/null 2>&1
     else
       echo_date "新版本资源下载失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
     fi
-    #删除安装文件
-    rm -rf $tmpDir >/dev/null 2>&1
-  else
-    echo_date "当前版本:v${old_version}是最新版本,无需更新!" >>$LOGFILE
   fi
   echo "ALSTBBACCEED" >>$LOGFILE
 }
@@ -220,14 +260,18 @@ stop)
 
 *) #web提交
   #更新
-  if [ "${2}" = "update" ]; then
+  if [ "${2}" = "update" ] || [ "${2}" = "updateBin" ]; then
     echo "" >$LOGFILE
     http_response "$1"
+    updatetype='bin'
+    if [ "${2}" = "update" ];then
+      updatetype='plugin'
+    fi
     if [ "${3}" = "1" ]; then
       #强制更新
-      self_upgrade "yes"
+      self_upgrade "yes" "${updatetype}"
     else
-      self_upgrade "no"
+      self_upgrade "no" "${updatetype}"
     fi
     exit
   fi

@@ -94,9 +94,11 @@
     <script type="text/javascript">
         var refresh_flag
         var has_new_version = false
+        var has_new_version_bin = false
         var db_alist = {}
-        var changeLog
-        var count_down
+        var changeLog;
+        var count_down;
+        var ghVersionInfo;
 
 		function E(e) {
 			return (typeof(e) == 'string') ? document.getElementById(e) : e;
@@ -235,8 +237,52 @@
                     if(db_alist["alist_watchdog_time"]){
                         $("#alist_watchdog_time").val(db_alist["alist_watchdog_time"]);
 					}
+                    if(db_alist['alist_bin_version']){
+                        checkBinVersion();
+                    }
                 }
             });
+        }
+
+        //检查二进制版本更新
+        function checkBinVersion()
+        {
+            if(! has_new_version_bin)
+            {
+                if(! ghVersionInfo)
+                {
+                    setTimeout('checkBinVersion();', 500);
+                }
+                else{
+                    $('#bin_version_update').html('检查更新中...');
+                    if(db_alist['alist_bin_version'])
+                    {
+                        makeVersionUpdate(db_alist['alist_bin_version'], 'bin');
+                    }
+                    else
+                    {
+                        $('#bin_version_update').html('二进制暂无更新');
+                        $('#bin_version_update').hide();
+                        $('#bin_version_update_1').show();
+                    }
+                }
+            }
+            else
+            {
+                $('#bin_version_update').html('二进制更新中');
+                versionUpdate(0,'bin');
+            }
+
+            $('#bin_version_update_1').hover(
+                function () {
+                    $(this).css("color",'#ff3300');
+                    $(this).html('强行更新二进制');
+                },
+                function () {
+                    $(this).css("color",'#00ffe4');
+                    $(this).html('二进制暂无更新');
+                }
+            );
         }
 
         //检查版本更新
@@ -244,27 +290,32 @@
         {
             if(! has_new_version)
             {
-                $('#version_update').html('检查更新中...');
-                $.ajax({
-                     type: "GET",
-                     url: "/_api/softcenter_module_alist_version",
-                     async: true,
-                     cache:false,
-                     dataType: 'json',
-                     success: function(response) {
-                         if(response['result'][0]['softcenter_module_alist_version'])
-                         {
-                            var old_version = parseFloat(response['result'][0]['softcenter_module_alist_version']);
-                            getGhVersion(old_version);
+                if(! ghVersionInfo)
+                {
+                    setTimeout('checkVersion();', 500);
+                }
+                else{
+                    $('#version_update').html('检查更新中...');
+                    $.ajax({
+                         type: "GET",
+                         url: "/_api/softcenter_module_alist_version",
+                         async: true,
+                         cache:false,
+                         dataType: 'json',
+                         success: function(response) {
+                             if(response['result'][0]['softcenter_module_alist_version'])
+                             {
+                                makeVersionUpdate(response['result'][0]['softcenter_module_alist_version']);
+                             }
+                             else
+                             {
+                                $('#version_update').html('插件暂无更新');
+                                $('#version_update').hide();
+                                $('#version_update_1').show();
+                             }
                          }
-                         else
-                         {
-                            $('#version_update').html('插件暂无更新');
-                            $('#version_update').hide();
-                            $('#version_update_1').show();
-                         }
-                     }
-                 });
+                     });
+                }
             }
             else
             {
@@ -284,51 +335,115 @@
             );
         }
 
-        function getGhVersion(old_version, source_url)
+        function makeVersionUpdate(old_version, type = 'plugin')
         {
-            source_url = source_url ? source_url : 'https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info';
-             $.ajax({
-                 type: "GET",
-                 url: source_url,
-                 async: true,
-                 cache:false,
-                 dataType: 'json',
-                 success: function(response) {
-                     if(response['version'])
-                     {
-                        var new_version = parseFloat(response['version']);
-                        if(new_version > old_version)
+            if(! ghVersionInfo)
+            {
+                getGhVersion();
+            }
+            else
+            {
+                if(type === 'plugin')
+                {
+                    if(ghVersionInfo['version'])
+                    {
+                        var new_version = ghVersionInfo['version'];
+                        if(compareVersion(new_version,old_version))
                         {
-                            $('#version_update').html('<font color="yellow">有新版本:<font color="red">v' + new_version + '</font>(点击更新)</font>');
-                            has_new_version = true;
+                          $('#version_update').html('<font color="yellow">有新版本:<font color="red">v' + new_version + '</font>(点击更新)</font>');
+                          has_new_version = true;
                         }
                         else
                         {
-                            $('#version_update').html('插件暂无更新');
-                            $('#version_update').hide();
-                            $('#version_update_1').show();
+                          $('#version_update').html('插件暂无更新');
+                          $('#version_update').hide();
+                          $('#version_update_1').show();
                         }
-                     }
-                     if(response['change_log'])
-                     {
-                        changeLog = response['change_log'];
-                        $('#soft_change_log').click(function(){
-                            viewChangelog();
-                        });
-                     }
-                 },
-                 error: function(){
-                    var other_url = 'https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info';
-                    if(source_url !== other_url)
-                    {
-                        getGhVersion(old_version, other_url);
                     }
-                 }
-            });
+                    if(ghVersionInfo['change_log'])
+                    {
+                        changeLog = ghVersionInfo['change_log'];
+                        $('#soft_change_log').click(function(){
+                          viewChangelog();
+                        });
+                    }
+                }
+                else
+                {
+                    if(ghVersionInfo['bin_version'])
+                    {
+                        var new_version = ghVersionInfo['bin_version'];
+                        console.log(new_version,old_version,compareVersion(new_version, old_version));
+                        if(compareVersion(new_version, old_version))
+                        {
+                          $('#bin_version_update').html('<font color="yellow">有新版本:<font color="red">v' + new_version + '</font>(点击更新)</font>');
+                          has_new_version = true;
+                        }
+                        else
+                        {
+                          $('#bin_version_update').html('二进制暂无更新');
+                          $('#bin_version_update').hide();
+                          $('#bin_version_update_1').show();
+                        }
+                    }
+                }
+            }
+        }
+
+        function getGhVersion(source_url)
+        {
+            if(! ghVersionInfo)
+            {
+                source_url = source_url ? source_url : 'https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info';
+                $.ajax({
+                    type: "GET",
+                    url: source_url,
+                    async: true,
+                    cache:false,
+                    dataType: 'json',
+                    success: function(response) {
+                        ghVersionInfo = response;
+                    },
+                    error: function(){
+                        var other_url = 'https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info';
+                        if(source_url !== other_url)
+                        {
+                            getGhVersion(old_version, type, other_url);
+                        }
+                    }
+                });
+            }
+        }
+
+        /**
+        * 检查版本号 大于返回1 小于返回-1 等于返回0
+        */
+        function compareVersion(version1, version2) {
+            const newVersion1 = `${version1}`.split('.').length < 3 ? `${version1}`.concat('.0') : `${version1}`;
+            const newVersion2 = `${version2}`.split('.').length < 3 ? `${version2}`.concat('.0') : `${version2}`;
+            //计算版本号大小,转化大小
+            function toNum(a){
+                const c = a.toString().split('.');
+                const num_place = ["", "0", "00", "000", "0000"],
+                    r = num_place.reverse();
+                for (let i = 0; i < c.length; i++){
+                    const len=c[i].length;
+                    c[i]=r[len]+c[i];
+                }
+                return c.join('');
+            }
+
+            //检测版本号是否需要更新
+            function checkPlugin(a, b) {
+                const numA = toNum(a);
+                const numB = toNum(b);
+                return numA > numB ? 1 : numA < numB ? -1 : 0;
+            }
+            return checkPlugin(newVersion1 ,newVersion2);
         }
 
         //升级版本
-        function versionUpdate(act)
+        function versionUpdate(act,type = 'plugin')
         {
             require(['/res/layer/layer.js'], function(layer) {
                 layer.confirm('在线更新功能需要路由器剩余磁盘空间较大，如在线更新失败您可以删除插件后重新离线安装。', {
@@ -336,7 +451,8 @@
                 }, function(index) {
                     //act 0普通更新 1强制更新
                     var id2 = parseInt(Math.random() * 100000000);
-                    var postData = {"id": id2, "method": "alist_config.sh", "params":['update', act], "fields": ""};
+                    var updateType = type === 'plugin' ? 'update' : 'updateBin';
+                    var postData = {"id": id2, "method": "alist_config.sh", "params":[updateType, act], "fields": ""};
                     $.ajax({
                         type: "POST",
                         url: "/_api/",
@@ -462,6 +578,7 @@
         function init() {
             show_menu(menu_hook);
 			check_status();
+            getGhVersion();
 			checkVersion();
         }
 
@@ -539,6 +656,8 @@
                                                         <a id="alist_name" class="show-btn" style="cursor:pointer" type="button">Alist文件列表</a>
                                                         <a id="version_update" class="show-btn" style="cursor:pointer" type="button" onClick="checkVersion();">检查更新中...</a>
                                                         <a id="version_update_1" class="show-btn" style="cursor:pointer;color:#00ffe4;display:none;" type="button" onClick="versionUpdate(1);">插件暂无更新</a>
+                                                        <a id="bin_version_update" class="show-btn" style="cursor:pointer" type="button" onClick="checkBinVersion();">检查更新中...</a>
+                                                        <a id="bin_version_update_1" class="show-btn" style="cursor:pointer;color:#00ffe4;display:none;" type="button" onClick="versionUpdate(1,'bin');">二进制暂无更新</a>
                                                     </td>
                                                 </tr>
                                             </table>
