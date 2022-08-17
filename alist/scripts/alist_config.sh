@@ -15,6 +15,7 @@ configCacheCleaup=120                 #清理失效缓存间隔
 configHttps=false                     #是否开启https
 configCertFile=''                     #https证书cert文件路径
 configKeyFile=''                      #https证书key文件路径
+nowBinVersion="2.6.4"                 #当前二进制版本
 LOGFILE="/tmp/upload/alist_log.txt"
 
 initData() {
@@ -56,6 +57,11 @@ initData() {
   if [ ! -f "$alistVersion" ] || [ "`cat $alistVersion`Z" == "Z" ]; then
     /koolshare/bin/alist -version >$alistVersion
   fi
+  #初始化二进制版本号
+  if [ "${alist_bin_version}Z" != "Z" ]; then
+      dbus set alist_bin_version="${nowBinVersion}"
+  fi
+
   auto_start
   makeConfig
 }
@@ -202,6 +208,7 @@ self_upgrade() {
     echo_date "下载二进制中..." >>$LOGFILE
     echo_date "资源文件较大，请耐心等待..." >>$LOGFILE
     versionbinfilepath=$(echo "${version_info}" | jq .bin_filepath | sed 's/\"//g')
+    binUpVersion=$(echo "${version_info}" | jq .bin_version | sed 's/\"//g')
     downloadUrl="https://ghproxy.com/https://github.com/"${versionbinfilepath}
     downloadUrl_1="https://raw.githubusercontents.com/"${versionbinfilepath}
     wget --no-cache -O ${tmpDir}alist "${downloadUrl}"
@@ -218,6 +225,8 @@ self_upgrade() {
       mv "${tmpDir}alist" /koolshare/bin/alist >/dev/null 2>&1
       #给执行权限
       chmod +x /koolshare/bin/alist >/dev/null 2>&1
+      #写新二进制版本
+      dbus set alist_bin_version="${binUpVersion}"
       echo_date "二进制更新完成..." >>$LOGFILE
       if [ "$alist_enable" == "1" ]; then
         echo_date "插件已开启，重启插件中..." >>$LOGFILE
