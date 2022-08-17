@@ -251,7 +251,6 @@
             {
                 if(! ghVersionInfo)
                 {
-                    console.log('xxxxxxx');
                     setTimeout('checkBinVersion();', 500);
                 }
                 else{
@@ -293,7 +292,6 @@
             {
                 if(! ghVersionInfo)
                 {
-                    console.log('ZZZZZ');
                     setTimeout('checkVersion();', 500);
                 }
                 else{
@@ -397,16 +395,17 @@
             if(! ghVersionInfo)
             {
                 source_url = source_url ? source_url : 'https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info';
+                console.log(source_url);
                 $.ajax({
                     type: "GET",
                     url: source_url,
-                    async: true,
-                    cache:false,
+                    async: false,
                     dataType: 'json',
                     success: function(response) {
                         ghVersionInfo = response;
                     },
-                    error: function(){
+                    error: function(res){
+                    console.log(res);
                         var other_url = 'https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info';
                         if(source_url !== other_url)
                         {
