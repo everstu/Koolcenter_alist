@@ -396,7 +396,8 @@
                 $.ajax({
                     type: "GET",
                     url: source_url,
-                    async: false,
+                    async: true,
+                    cache: false,
                     dataType: 'json',
                     success: function(response) {
                         ghVersionInfo = response;
