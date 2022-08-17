@@ -251,6 +251,7 @@
             {
                 if(! ghVersionInfo)
                 {
+                    console.log('xxxxxxx');
                     setTimeout('checkBinVersion();', 500);
                 }
                 else{
@@ -292,6 +293,7 @@
             {
                 if(! ghVersionInfo)
                 {
+                    console.log('ZZZZZ');
                     setTimeout('checkVersion();', 500);
                 }
                 else{
