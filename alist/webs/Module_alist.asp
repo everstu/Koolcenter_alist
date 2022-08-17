@@ -112,7 +112,6 @@
 				async: true,
 				data: JSON.stringify(postData),
 				success: function (response) {
-					//console.log(response)
 					var arr = response.result.split("@");
 					E("alist_status").innerHTML = arr[0];
 					var alistPwd =  arr[1].replace('your password: ','');
@@ -373,7 +372,6 @@
                     if(ghVersionInfo['bin_version'])
                     {
                         var new_version = ghVersionInfo['bin_version'];
-                        console.log(new_version,old_version,compareVersion(new_version, old_version));
                         if(compareVersion(new_version, old_version))
                         {
                           $('#bin_version_update').html('<font color="yellow">有新版本:<font color="red">v' + new_version + '</font>(点击更新)</font>');
@@ -395,7 +393,6 @@
             if(! ghVersionInfo)
             {
                 source_url = source_url ? source_url : 'https://ghproxy.com/https://raw.githubusercontent.com/everstu/Koolcenter_alist/master/version_info';
-                console.log(source_url);
                 $.ajax({
                     type: "GET",
                     url: source_url,
@@ -405,7 +402,6 @@
                         ghVersionInfo = response;
                     },
                     error: function(res){
-                    console.log(res);
                         var other_url = 'https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info';
                         if(source_url !== other_url)
                         {
