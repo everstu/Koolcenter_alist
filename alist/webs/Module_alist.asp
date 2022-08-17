@@ -408,7 +408,7 @@
                         var other_url = 'https://raw.githubusercontents.com/everstu/Koolcenter_alist/master/version_info';
                         if(source_url !== other_url)
                         {
-                            getGhVersion(old_version, type, other_url);
+                            getGhVersion(other_url);
                         }
                     }
                 });
