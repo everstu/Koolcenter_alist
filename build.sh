@@ -22,15 +22,20 @@ echo "安装包打包成功..."
 # shellcheck disable=SC2002
 oldMd5=$(cat version_info | grep -o -E "\"md5[a-z]{3}\":\"[a-z0-9]{32}\"" | awk -F ":" '{print $2}'| sed 's/\"//g');
 buildMd5=$(md5sum alist.tar.gz | awk '{print $1}');
-echo "校验新旧文件md5"
+buildBinMd5=$(md5sum alist/bin/alist | awk '{print $1}');
 
+echo "校验新旧文件md5"
 if [ "$oldMd5" = "$buildMd5" ];then
     echo "新旧文件md5一致,不修改发布信息"
   else
     echo "新旧文件md5不一致,发布版本信息"
     #替换版本信息中的MD5
     sed -i 's/"md5sum":".\{32\}"/"md5sum":"'"${buildMd5}"'"/g' version_info
-    echo "修改version_info中md5成功"
+    echo "修改version_info中插件包md5成功"
+    echo ""
+    #替换二进制md5
+    sed -i 's/"bin_md5":".\{32\}"/"bin_md5":"'"${buildBinMd5}"'"/g' version_info
+    echo "修改version_info中二进制md5成功"
     echo ""
     if [ $update_version ];then
       echo "打包文件中版本号修改完毕"

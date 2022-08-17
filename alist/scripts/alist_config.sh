@@ -196,8 +196,6 @@ self_upgrade() {
       else
         echo_date "新版本资源下载失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
       fi
-      #删除安装文件
-      rm -rf $tmpDir >/dev/null 2>&1
     else
       echo_date "当前版本:v${old_version}是最新版本,无需更新!" >>$LOGFILE
     fi
@@ -219,29 +217,35 @@ self_upgrade() {
     fi
     #判断是否下载成功
     if [ -f "${tmpDir}alist" ]; then
-      #删除旧的二进制
-      rm -rf /koolshare/bin/alist >/dev/null 2>&1
-      #把新二进制移动到目录下
-      mv "${tmpDir}alist" /koolshare/bin/alist >/dev/null 2>&1
-      #给执行权限
-      chmod +x /koolshare/bin/alist >/dev/null 2>&1
-      #写新二进制版本
-      dbus set alist_bin_version="${binUpVersion}"
-      echo_date "二进制更新完成..." >>$LOGFILE
-      if [ "$alist_enable" == "1" ]; then
-        echo_date "插件已开启，重启插件中..." >>$LOGFILE
-        sleep 1
-        start
+      newBinMd5=$(md5sum ${tmpDir}alist | cut -d ' ' -f1)
+      checkBinMd5=$(echo "${version_info}" | jq .bin_md5 | sed 's/\"//g')
+      if [ "$newBinMd5" = "$checkBinMd5" ]; then
+        #删除旧的二进制
+        rm -rf /koolshare/bin/alist >/dev/null 2>&1
+        #把新二进制移动到目录下
+        mv "${tmpDir}alist" /koolshare/bin/alist >/dev/null 2>&1
+        #给执行权限
+        chmod +x /koolshare/bin/alist >/dev/null 2>&1
+        #写新二进制版本
+        dbus set alist_bin_version="${binUpVersion}"
+        echo_date "二进制更新完成..." >>$LOGFILE
+        if [ "$alist_enable" == "1" ]; then
+          echo_date "插件已开启，重启插件中..." >>$LOGFILE
+          sleep 1
+          start
+        else
+          echo_date "未开启插件，请手动开启插件..." >>$LOGFILE
+        fi
+        echo_date "更新完成,享受新版本吧~~~" >>$LOGFILE
       else
-        echo_date "未开启插件，请手动开启插件..." >>$LOGFILE
+          echo_date "二进制md5校验失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
       fi
-      echo_date "更新完成,享受新版本吧~~~" >>$LOGFILE
-      #删除安装文件
-      rm -rf $tmpDir >/dev/null 2>&1
     else
       echo_date "新版本资源下载失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
     fi
   fi
+  #删除安装文件
+  rm -rf $tmpDir >/dev/null 2>&1
   echo "ALSTBBACCEED" >>$LOGFILE
 }
 
