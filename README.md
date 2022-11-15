@@ -8,4 +8,6 @@
 https://github.com/alist-org/alist
 
 #### 文档地址
-https://alist-doc.nn.ci/docs/intro
+V2 https://alist-doc.nn.ci/docs/intro
+
+V3 https://alist.nn.ci/zh/guide/
