@@ -172,16 +172,16 @@
 
         function makeDbAlist()
         {
-            db_alist['alist_https']          = E("alist_https").checked ? '1' : '0';
-            db_alist['alist_cert_file']      = E("alist_cert_file").value;
-            db_alist['alist_key_file']       = E("alist_key_file").value;
-            db_alist['alist_port']           = E('alist_port').value;
-            db_alist['alist_assets']         = E('alist_assets').value;
-            db_alist['alist_cache_cleaup']   = E('alist_cache_cleaup').value;
-            db_alist['alist_cache_time']     = E('alist_cache_time').value;
-            db_alist['alist_publicswitch']   = E("alist_publicswitch").checked ? '1' : '0';
-            db_alist['alist_watchdog']       = E("alist_watchdog").checked ? '1' : '0';
-            db_alist['alist_watchdog_time']  = E("alist_watchdog_time").value;
+            db_alist['alist_https']            = E("alist_https").checked ? '1' : '0';
+            db_alist['alist_cert_file']        = E("alist_cert_file").value;
+            db_alist['alist_key_file']         = E("alist_key_file").value;
+            db_alist['alist_port']             = E('alist_port').value;
+            db_alist['alist_cdn']              = E('alist_cdn').value;
+            db_alist['alist_token_expires_in'] = E('alist_token_expires_in').value;
+            db_alist['alist_site_url']         = E('alist_site_url').value;
+            db_alist['alist_publicswitch']     = E("alist_publicswitch").checked ? '1' : '0';
+            db_alist['alist_watchdog']         = E("alist_watchdog").checked ? '1' : '0';
+            db_alist['alist_watchdog_time']    = E("alist_watchdog_time").value;
         }
 
         function close() {
@@ -212,20 +212,17 @@
                     E("alist_https").checked = db_alist["alist_https"] == "1";
 					E("alist_publicswitch").checked = db_alist["alist_publicswitch"] == "1";
 					E("alist_watchdog").checked = db_alist["alist_watchdog"] == "1";
-					if(db_alist["alist_cache_time"]){
-						E("alist_cache_time").value = db_alist["alist_cache_time"];
+					if(db_alist["alist_token_expires_in"]){
+						E("alist_token_expires_in").value = db_alist["alist_token_expires_in"];
 					}
-					if(db_alist["alist_cache_cleaup"]){
-						E("alist_cache_cleaup").value = db_alist["alist_cache_cleaup"];
+					if(db_alist["alist_site_url"]){
+						E("alist_site_url").value = db_alist["alist_site_url"];
 					}
                     if(db_alist["alist_port"]){
 						E("alist_port").value = db_alist["alist_port"];
 					}
-                    if(db_alist["alist_assets"]){
-						E("alist_assets").value = db_alist["alist_assets"];
-					}
-                    if(db_alist["alist_assets"]){
-						E("alist_assets").value = db_alist["alist_assets"];
+                    if(db_alist["alist_cdn"]){
+						E("alist_cdn").value = db_alist["alist_cdn"];
 					}
                     if(db_alist["alist_cert_file"]){
 						E("alist_cert_file").value = db_alist["alist_cert_file"];
@@ -759,21 +756,21 @@
                                             </tr>
                                             </thead>
                                         <tr>
-                                            <th>缓存失效时间</th>
+                                            <th>用户登录过期时间</th>
                                             <td>
-                                            <input onkeyup="this.value=this.value.replace(/[^1-9]+/,'2')" id="alist_cache_time" maxlength="1" style="color: #FFFFFF; width: 30px; height: 20px; background-color:rgba(87,109,115,0.5); font-family: Arial, Helvetica, sans-serif; font-weight:normal; font-size:12px;" value="2" ><span>&nbsp;分钟</span>
+                                            <input onkeyup="this.value=this.value.replace(/[^1-9]+/,'2')" id="alist_token_expires_in" maxlength="1" style="color: #FFFFFF; width: 30px; height: 20px; background-color:rgba(87,109,115,0.5); font-family: Arial, Helvetica, sans-serif; font-weight:normal; font-size:12px;" value="2" ><span>&nbsp;小时</span>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th>清理失效缓存间隔</th>
+                                            <th>网站URL（site_url）</th>
                                             <td>
-                                            <input onkeyup="this.value=this.value.replace(/[^1-9]+/,'2')" id="alist_cache_cleaup" maxlength="1" style="color: #FFFFFF; width: 30px; height: 20px; background-color:rgba(87,109,115,0.5); font-family: Arial, Helvetica, sans-serif; font-weight:normal; font-size:12px;" value="2" ><span>&nbsp;分钟</span>
+                                            <input type="text" id="alist_site_url" style="width: 380px;" class="input_3_table" name="alist_site_url" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="">
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th>静态资源位置</th>
+                                            <th>静态资源CDN地址</th>
                                             <td>
-                                            <input type="text" id="alist_assets" style="width: 380px;" class="input_3_table" name="alist_assets" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="">
+                                            <input type="text" id="alist_cdn" style="width: 380px;" class="input_3_table" name="alist_cdn" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="">
                                             </td>
                                         </tr>
                                         <tr>

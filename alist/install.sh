@@ -11,6 +11,12 @@ DIR=$(
 )
 module=${DIR##*/}
 
+#检测module变量是否为空，防止误删除/tmp所有文件。
+if [ Z"${module}" == "Z" ]; then
+  echo_date "获取安装模块目录module失败，退出安装！"
+  exit
+fi
+
 get_model() {
   local ODMPID=$(nvram get odmpid)
   local PRODUCTID=$(nvram get productid)
@@ -195,10 +201,28 @@ install_now() {
   exit_install
 }
 
+checkIsNeedMigrate() {
+  local runDir="/koolshare/alist"
+  if [ -d ${runDir} ]; then
+    local binVersion=$(dbus get alist_bin_version)
+    local version=${binVersion:0:1}
+    if [ $version -lt 3 ];then
+     echo_date "检测已安装alist_v2版，此次升级无法兼容升级！"
+     echo_date "已备份alist_v2数据至/koolshare/alist_v2目录。"
+     mv /koolshare/alist /koolshare/alist_v2
+     #清理失效配置项
+     dbus remove alist_assets
+     dbus remove alist_cache_time
+     dbus remove alist_cache_cleaup
+    fi
+  fi
+}
+
 install() {
   get_model
   get_fw_type
   platform_test
+  checkIsNeedMigrate
   install_now
 }
 

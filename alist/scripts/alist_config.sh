@@ -6,16 +6,16 @@ eval $(dbus export alist_)
 
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 alistBaseDir="/koolshare/alist/"
-configJson=${alistBaseDir}config.json
+configDir=${alistBaseDir}
 alistVersion=${alistBaseDir}alist.version
 configPort=5244                       #监听端口
-configAssets=$(dbus get alist_assets) #资源文件地址
-configCacheTime=60                    #缓存时间 单位分钟
-configCacheCleaup=120                 #清理失效缓存间隔
+configCdn=$(dbus get alist_cdn)       #资源文件地址
+configTokenExpiresIn=48               #登录有效时间 单位小时
+configSiteUrl=                     #清理失效缓存间隔
 configHttps=false                     #是否开启https
 configCertFile=''                     #https证书cert文件路径
 configKeyFile=''                      #https证书key文件路径
-nowBinVersion="2.6.4"                 #当前二进制版本
+nowBinVersion="3.4.0"                 #当前打包文件二进制版本
 LOGFILE="/tmp/upload/alist_log.txt"
 
 initData() {
@@ -26,24 +26,24 @@ initData() {
   fi
   #初始化缓存时间
   # shellcheck disable=SC2154
-  if [ "${alist_cache_time}Z" != "Z" ]; then
-    configCacheTime=$alist_cache_time
+  if [ "${alist_site_url}Z" != "Z" ]; then
+    configSiteUrl=$alist_site_url
   fi
   #初始化缓存清除时间
   # shellcheck disable=SC2154
-  if [ "${alist_cache_cleaup}Z" != "Z" ]; then
-    configCacheCleaup=$alist_cache_cleaup
+  if [ "${alist_token_expires_in}Z" != "Z" ]; then
+    configTokenExpiresIn=$alist_token_expires_in
   fi
-  #初始化静态资源位置
+  #初始化静态资源CDN位置
   # shellcheck disable=SC2154
-  if [ "${configAssets}Z" == "Z" ]; then
-    configAssets='/'
-    dbus set alist_assets='/'
+  if [ "${configCdn}Z" == "Z" ]; then
+    configCdn='/'
+    dbus set configCdn='/'
   else
     #检测是否为饿了么CDN如果为饿了么CDN则强行替换成本地静态资源
-    if [ $(echo $configAssets | grep "https://npm.elemecdn.com")Z != "Z" ]; then
-      configAssets='/'
-      dbus set alist_assets='/'
+    if [ $(echo configCdn | grep "https://npm.elemecdn.com")Z != "Z" ]; then
+      configCdn='/'
+      dbus set configCdn='/'
     fi
   fi
   #初始化https
@@ -54,12 +54,12 @@ initData() {
     configKeyFile=$alist_key_file
   fi
   #优化版本获取速度
-  if [ ! -f "$alistVersion" ] || [ "`cat $alistVersion`Z" == "Z" ]; then
-    /koolshare/bin/alist -version >$alistVersion
+  if [ ! -f "$alistVersion" ] || [ "$(cat $alistVersion)Z" == "Z" ]; then
+    /koolshare/bin/alist version > $alistVersion 2>&1
   fi
   #初始化二进制版本号
   if [ "${alist_bin_version}Z" != "Z" ]; then
-      dbus set alist_bin_version="${nowBinVersion}"
+    dbus set alist_bin_version="${nowBinVersion}"
   fi
 
   auto_start
@@ -67,8 +67,9 @@ initData() {
 }
 
 makeConfig() {
-  config='{"force":false,"address":"0.0.0.0","port":'${configPort}',"assets":"'${configAssets}'","database":{"type":"sqlite3","host":"","port":0,"user":"","password":"","name":"","db_file":"/koolshare/alist/data.db","table_prefix":"x_","ssl_mode":""},"scheme":{"https":'${configHttps}',"cert_file":"'${configCertFile}'","key_file":"'${configKeyFile}'"},"cache":{"expiration":'${configCacheTime}',"cleanup_interval":'${configCacheCleaup}'},"temp_dir":"/koolshare/alist/temp"}'
-  echo "$config" >$configJson
+  #config_v2='{"force":false,"address":"0.0.0.0","port":'${configPort}',"assets":"'${configAssets}'","database":{"type":"sqlite3","host":"","port":0,"user":"","password":"","name":"","db_file":"/koolshare/alist/data.db","table_prefix":"x_","ssl_mode":""},"scheme":{"https":'${configHttps}',"cert_file":"'${configCertFile}'","key_file":"'${configKeyFile}'"},"cache":{"expiration":'${configCacheTime}',"cleanup_interval":'${configCacheCleaup}'},"temp_dir":"/koolshare/alist/temp"}'
+  config='{"force":false,"address":"0.0.0.0","port":'${configPort}',"jwt_secret":"random generated","token_expires_in":'${configTokenExpiresIn}',"site_url":"'${configSiteUrl}'","cdn":"'${configCdn}'","database":{"type":"sqlite3","host":"","port":0,"user":"","password":"","name":"","db_file":"/koolshare/alist/data/data.db","table_prefix":"x_","ssl_mode":""},"scheme":{"https":'${configHttps}',"cert_file":"'${configCertFile}'","key_file":"'${configKeyFile}'"},"temp_dir":"/koolshare/alist/temp","log":{"enable":false,"name":"/koolshare/alist/log/alist.log","max_size":10,"max_backups":5,"max_age":28,"compress":false}}'
+  echo "$config" >$configDir"/config.json"
 }
 
 auto_start() {
@@ -82,7 +83,7 @@ start() {
   #检查是否开启公网转发
   public_access
   #启动进程
-  /koolshare/bin/alist -conf ${configJson} // >/dev/null 2>&1 &
+  /koolshare/bin/alist --data ${configDir} server // >/dev/null 2>&1 &
   dbus set alist_enable="1"
   #检查看门狗
   watchDog open
@@ -137,7 +138,7 @@ self_upgrade() {
     version_info=$(curl -s -m 10 "$versionapi_1")
   fi
   mkdir -p $tmpDir
-  if [ "${2}" = "plugin" ];then
+  if [ "${2}" = "plugin" ]; then
     new_version=$(echo "${version_info}" | jq .version)
     old_version=$(dbus get "softcenter_module_alist_version")
     #比较版本信息 如果新版本大于当前安装版本或强制更新则执行更新脚本
@@ -240,7 +241,7 @@ self_upgrade() {
         fi
         echo_date "更新完成,享受新版本吧~~~" >>$LOGFILE
       else
-          echo_date "二进制md5校验失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
+        echo_date "二进制md5校验失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
       fi
     else
       echo_date "二进制下载失败,退出更新,请离线更新或稍后再更新..." >>$LOGFILE
@@ -264,7 +265,7 @@ start) #开机启动
   ;;
 check) #检查进程
   alist_pid=$(pidof alist)
-  if [ "$alist_pid"Z == "Z"  ]; then
+  if [ "$alist_pid"Z == "Z" ]; then
     start
     logger "[软件中心-Alist看门狗]: Alist自启动成功！"
   fi
@@ -279,7 +280,7 @@ stop)
     echo "" >$LOGFILE
     http_response "$1"
     updatetype='bin'
-    if [ "${2}" = "update" ];then
+    if [ "${2}" = "update" ]; then
       updatetype='plugin'
     fi
     if [ "${3}" = "1" ]; then
@@ -308,7 +309,8 @@ stop)
     port=${configPort}
     if [ "$alist_pid" -gt 0 ]; then
       text="<span style='color: gold'>运行中</span>"
-      pwd=$(/koolshare/bin/alist -conf ${configJson} -password)
+      /koolshare/bin/alist --data ${configDir} admin > ${alistBaseDir}/admin.account  2>&1
+      pwd=$(tail -n 2 /koolshare/alist/admin.account)
       binVersion=$(cat $alistVersion | awk '/Version:/{print $2}' | head -n 2 | tail -n 1)
       webVersion=$(cat $alistVersion | awk '/Version:/{print $2}' | tail -n 1)
     fi
