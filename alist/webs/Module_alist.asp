@@ -114,7 +114,7 @@
 				success: function (response) {
 					var arr = response.result.split("@");
 					E("alist_status").innerHTML = arr[0];
-					var alistPwd =  arr[1].replace('your password: ','');
+					var alistPwd =  arr[1];
 					E("alist_pwd").innerHTML = alistPwd ? alistPwd : '<span style="color: red">未启用</span>';
 					var alistVersionInfo = '<span style="color: red">未启用</span>'
 					if(arr[3] && arr[4])
@@ -411,30 +411,31 @@
         }
 
         /**
-        * 检查版本号 大于返回1 小于返回-1 等于返回0
+        * 比较版本号的大小，serverVersion 大于 localVersion，则返回true，否则返回false
         */
-        function compareVersion(version1, version2) {
-            const newVersion1 = `${version1}`.split('.').length < 3 ? `${version1}`.concat('.0') : `${version1}`;
-            const newVersion2 = `${version2}`.split('.').length < 3 ? `${version2}`.concat('.0') : `${version2}`;
-            //计算版本号大小,转化大小
-            function toNum(a){
-                const c = a.toString().split('.');
-                const num_place = ["", "0", "00", "000", "0000"],
-                    r = num_place.reverse();
-                for (let i = 0; i < c.length; i++){
-                    const len=c[i].length;
-                    c[i]=r[len]+c[i];
+        function compareVersion(serverVersion, localVersion) {
+            var arr1 = curV.toString().split('.');
+            var arr2 = reqV.toString().split('.');
+            //将两个版本号拆成数字
+            var minL = Math.min(arr1.length, arr2.length);
+            var pos = 0; //当前比较位
+            var diff = 0; //当前为位比较是否相等
+            var flag = false;
+            //逐个比较如果当前位相等则继续比较下一位
+            while(pos < minL) {
+                diff = parseInt(arr1[pos]) - parseInt(arr2[pos]);
+                if(diff == 0) {
+                    pos++;
+                    continue;
+                } else if(diff > 0) {
+                    flag = true;
+                    break;
+                } else {
+                    flag = false;
+                    break;
                 }
-                return c.join('');
             }
-
-            //检测版本号是否需要更新
-            function checkPlugin(a, b) {
-                const numA = toNum(a);
-                const numB = toNum(b);
-                return numA > numB ? 1 : numA < numB ? -1 : 0;
-            }
-            return checkPlugin(newVersion1 ,newVersion2);
+            return flag;
         }
 
         //升级版本
