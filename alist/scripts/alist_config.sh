@@ -58,7 +58,7 @@ initData() {
     /koolshare/bin/alist version > $alistVersion 2>&1
   fi
   #初始化二进制版本号
-  if [ "${alist_bin_version}Z" != "Z" ]; then
+  if [ "${alist_bin_version}Z" == "Z" ]; then
     dbus set alist_bin_version="${nowBinVersion}"
   fi
 
