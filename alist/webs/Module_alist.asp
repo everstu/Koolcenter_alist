@@ -378,7 +378,7 @@
                         if(compareVersion(new_version, old_version))
                         {
                           $('#bin_version_update').html('<font color="yellow">有新版本:<font color="red">v' + new_version + '</font>(点击更新)</font>');
-                          has_new_version = true;
+                          has_new_version_bin = true;
                         }
                         else
                         {
