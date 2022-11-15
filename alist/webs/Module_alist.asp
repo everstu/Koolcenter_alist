@@ -241,7 +241,7 @@
         }
 
         //检查二进制版本更新
-        function checkBinVersion()
+        function checkBinVersion(act)
         {
             if(! has_new_version_bin)
             {
@@ -265,8 +265,11 @@
             }
             else
             {
-                $('#bin_version_update').html('二进制更新中');
-                versionUpdate(0,'bin');
+                if(act == 1)
+                {
+                    $('#bin_version_update').html('二进制更新中');
+                    versionUpdate(0,'bin');
+                }
             }
 
             $('#bin_version_update_1').hover(
@@ -282,7 +285,7 @@
         }
 
         //检查版本更新
-        function checkVersion()
+        function checkVersion(act)
         {
             if(! has_new_version)
             {
@@ -315,8 +318,11 @@
             }
             else
             {
-                $('#version_update').html('插件更新中');
-                versionUpdate(0);
+                if(act == 1)
+                {
+                    $('#version_update').html('插件更新中');
+                    versionUpdate(0);
+                }
             }
 
             $('#version_update_1').hover(
@@ -650,9 +656,9 @@
                                                 <tr width="400px">
                                                     <td colspan="4" cellpadding="0" cellspacing="0" style="padding:0" border="1" bordercolor="#000">
                                                         <a id="alist_name" class="show-btn" style="cursor:pointer" type="button">Alist文件列表</a>
-                                                        <a id="version_update" class="show-btn" style="cursor:pointer" type="button" onClick="checkVersion();">检查更新中...</a>
+                                                        <a id="version_update" class="show-btn" style="cursor:pointer" type="button" onClick="checkVersion(1);">检查更新中...</a>
                                                         <a id="version_update_1" class="show-btn" style="cursor:pointer;color:#00ffe4;display:none;" type="button" onClick="versionUpdate(1);">插件暂无更新</a>
-                                                        <a id="bin_version_update" class="show-btn" style="cursor:pointer" type="button" onClick="checkBinVersion();">检查更新中...</a>
+                                                        <a id="bin_version_update" class="show-btn" style="cursor:pointer" type="button" onClick="checkBinVersion(1);">检查更新中...</a>
                                                         <a id="bin_version_update_1" class="show-btn" style="cursor:pointer;color:#00ffe4;display:none;" type="button" onClick="versionUpdate(1,'bin');">二进制暂无更新</a>
                                                     </td>
                                                 </tr>
