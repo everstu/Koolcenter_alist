@@ -414,8 +414,8 @@
         * 比较版本号的大小，serverVersion 大于 localVersion，则返回true，否则返回false
         */
         function compareVersion(serverVersion, localVersion) {
-            var arr1 = curV.toString().split('.');
-            var arr2 = reqV.toString().split('.');
+            var arr1 = serverVersion.toString().split('.');
+            var arr2 = localVersion.toString().split('.');
             //将两个版本号拆成数字
             var minL = Math.min(arr1.length, arr2.length);
             var pos = 0; //当前比较位
