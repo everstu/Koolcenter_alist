@@ -310,7 +310,7 @@ stop)
     if [ "$alist_pid" -gt 0 ]; then
       text="<span style='color: gold'>运行中</span>"
       /koolshare/bin/alist --data ${configDir} admin > ${alistBaseDir}/admin.account  2>&1
-      pwd=$(tail -n 2 /koolshare/alist/admin.account)
+      pwd=$(tail -n 2 /koolshare/alist/admin.account|sed ':a;N;$!ba; s/\n/ /g')
       binVersion=$(cat $alistVersion | awk '/Version:/{print $2}' | head -n 2 | tail -n 1)
       webVersion=$(cat $alistVersion | awk '/Version:/{print $2}' | tail -n 1)
     fi
