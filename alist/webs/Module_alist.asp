@@ -265,7 +265,7 @@
             }
             else
             {
-                if(act == 1)
+                if(act)
                 {
                     $('#bin_version_update').html('二进制更新中');
                     versionUpdate(0,'bin');
@@ -318,7 +318,7 @@
             }
             else
             {
-                if(act == 1)
+                if(act)
                 {
                     $('#version_update').html('插件更新中');
                     versionUpdate(0);
