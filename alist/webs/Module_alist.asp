@@ -267,7 +267,6 @@
             {
                 if(act)
                 {
-                    $('#bin_version_update').html('二进制更新中');
                     versionUpdate(0,'bin');
                 }
             }
@@ -320,7 +319,6 @@
             {
                 if(act)
                 {
-                    $('#version_update').html('插件更新中');
                     versionUpdate(0);
                 }
             }
@@ -451,6 +449,14 @@
                 layer.confirm('在线更新功能需要路由器剩余磁盘空间较大，如在线更新失败您可以删除插件后重新离线安装。', {
                     shade: 0.8,
                 }, function(index) {
+                    if(type == 'plugin')
+                    {
+                        $('#bin_version_update').html('二进制更新中');
+                    }
+                    else
+                    {
+                        $('#version_update').html('插件更新中');
+                    }
                     //act 0普通更新 1强制更新
                     var id2 = parseInt(Math.random() * 100000000);
                     var updateType = type === 'plugin' ? 'update' : 'updateBin';
