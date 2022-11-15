@@ -758,7 +758,7 @@
                                         <tr>
                                             <th>用户登录过期时间</th>
                                             <td>
-                                            <input onkeyup="this.value=this.value.replace(/[^1-9]+/,'2')" id="alist_token_expires_in" maxlength="1" style="color: #FFFFFF; width: 30px; height: 20px; background-color:rgba(87,109,115,0.5); font-family: Arial, Helvetica, sans-serif; font-weight:normal; font-size:12px;" value="2" ><span>&nbsp;小时</span>
+                                            <input onkeyup="this.value=this.value.replace(/[^1-9]+/,'2')" id="alist_token_expires_in" maxlength="8" style="color: #FFFFFF; width: 30px; height: 20px; background-color:rgba(87,109,115,0.5); font-family: Arial, Helvetica, sans-serif; font-weight:normal; font-size:12px;" value="48" ><span>&nbsp;小时</span>
                                             </td>
                                         </tr>
                                         <tr>
