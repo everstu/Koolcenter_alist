@@ -130,9 +130,27 @@ install_now() {
   rm -rf $tmpDir >/dev/null 2>&1
 }
 
+checkIsNeedMigrate() {
+  local runDir="/koolshare/alist"
+  if [ -d ${runDir} ]; then
+    local binVersion=$(dbus get alist_bin_version)
+    local version=${binVersion:0:1}
+    if [ $version -lt 3 ];then
+     echo_date "检测已安装alist_v2版，此次升级无法兼容升级！"
+     echo_date "已备份alist_v2数据至/koolshare/alist_v2目录。"
+     mv /koolshare/alist /koolshare/alist_v2
+     #清理失效配置项
+     dbus remove alist_assets
+     dbus remove alist_cache_time
+     dbus remove alist_cache_cleaup
+    fi
+  fi
+}
+
 install() {
   get_model
   get_fw_type
+  checkIsNeedMigrate
   install_now
 }
 
