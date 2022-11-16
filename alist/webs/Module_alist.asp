@@ -765,13 +765,13 @@
 
                                             <thead>
                                             <tr>
-                                                <td colspan="2">Alist 启动配置 -- <em style="color: gold;">【请查看<a href="https://alist-doc.nn.ci/docs/setting/config" target="_blank"><em>Alist官方文档</em></a>，不懂勿动！！！】</td>
+                                                <td colspan="2">Alist 启动配置 -- <em style="color: gold;">【请查看<a href="https://alist.nn.ci/zh/" target="_blank"><em>Alist官方文档</em></a>，不懂勿动！！！】</td>
                                             </tr>
                                             </thead>
                                         <tr>
                                             <th>用户登录过期时间</th>
                                             <td>
-                                            <input onkeyup="this.value=this.value.replace(/[^1-9]+/,'2')" id="alist_token_expires_in" maxlength="8" style="color: #FFFFFF; width: 30px; height: 20px; background-color:rgba(87,109,115,0.5); font-family: Arial, Helvetica, sans-serif; font-weight:normal; font-size:12px;" value="48" ><span>&nbsp;小时</span>
+                                            <input onkeyup="this.value=this.value.replace(/[^1-9][^0-9]*/,'')" id="alist_token_expires_in" maxlength="4" style="color: #FFFFFF; width: 30px; height: 20px; background-color:rgba(87,109,115,0.5); font-family: Arial, Helvetica, sans-serif; font-weight:normal; font-size:12px;" value="48" ><span>&nbsp;小时</span>
                                             </td>
                                         </tr>
                                         <tr>
