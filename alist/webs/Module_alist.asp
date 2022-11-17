@@ -822,7 +822,7 @@
                                         <div id="DEVICE_note" style="margin:10px 0 0 5px">
                                             <div><i>&nbsp;&nbsp;说明：<br>
                                             &nbsp;&nbsp;1.Alist后端管理密码请查看上面密码区；<br>
-                                            &nbsp;&nbsp;2.如有不懂，请查看Alist官方文档<a href="https://alist-doc.nn.ci/docs/intro" target="_blank"><em>点这里看文档</em></a><br>
+                                            &nbsp;&nbsp;2.如有不懂，请查看Alist官方文档<a href="https://alist.nn.ci/zh/" target="_blank"><em>点这里看文档</em></a><br>
 											&nbsp;&nbsp;3.如需开启HTTPS访问，请配置证书文件的全路径；<br>
 											&nbsp;&nbsp;4.如若开启公网访问，切记注意公网访问安全；<br>
                                             &nbsp;&nbsp;5.长期开启公网访问有风险，请酌情使用。<br>
