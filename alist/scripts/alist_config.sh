@@ -231,6 +231,8 @@ self_upgrade() {
         sleep 1
         #写新二进制版本
         dbus set alist_bin_version="${binUpVersion}"
+        #删除alist_version缓存
+        rm  $alistVersion
         echo_date "二进制更新完成..." >>$LOGFILE
         if [ "$alist_enable" == "1" ]; then
           echo_date "插件已开启，重启插件中..." >>$LOGFILE
