@@ -7,7 +7,6 @@ alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 AlistBaseDir=/koolshare/alist
 LOG_FILE=/tmp/upload/alist_log.txt
 LOCK_FILE=/var/lock/alist.lock
-FWPORT
 BASH=${0##*/}
 ARGS=$@
 
