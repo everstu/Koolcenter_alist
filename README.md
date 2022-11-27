@@ -50,5 +50,5 @@ V2 https://alist-doc.nn.ci/docs/intro
 | TUF-AX5400       | 512MB | BCM6750 | armv7 | 3    | 1.5 GHz | ❌             |
 | ZenWiFi_XT8      | 512MB | BCM6755 | armv7 | 4    | 1.5 GHz | ❌             |
 | ZenWiFi_XD4      | 256MB | BCM6755 | armv7 | 4    | 1.5 GHz | ❌             |
-| TUF-AX3000_V2    | 512MB | BCM6756 | armv7 | 4    | 1.7GHz  | ❌R            |
+| TUF-AX3000_V2    | 512MB | BCM6756 | armv7 | 4    | 1.7GHz  | ❌            |
 | RT-AX57          | 256MB | BCM6756 | armv7 | 4    | 1.7GHz  | ❌             |
