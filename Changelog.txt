@@ -1,0 +1,52 @@
+KoolCenter Aliat Changelog for HND platform
+===========================================
+
+1.0
+   - note	Alist插件上线软件中心，版本号从1.0开始
+       		1. 软件中心的alist程序版本从V3开始。
+       		2. 正在使用V2 alist的，建议卸载后安装
+       		2. 由于alist需要路由器较好性能，本插件目前仅支持hnd机型中的armv8机型！
+   - update	更新alist二进制至v3.5.1版本（arm64版本，采用upx --best压缩）
+   - update	重写了alist插件的web，界面更简洁直观
+   - update	看门狗升级为perp实时进程守护
+   - update	重新优化了下插件脚本逻辑
+   - update	现在密码默认隐藏，点击查看
+   - add	新增了帮助界面，鼠标移动到左侧栏文字即可见
+   - add	新增alist运行日志功能，可以方便查看当前进程日志
+   - add	新增alist插件日志
+
+0.6
+   - add	增加二进制在线更新功能
+   - update	更新alist二进制至v3.4.0版本
+   - note	从v2版本升级会备份数据库
+   - note	不兼容插件v0.5，二进制V3.0.0及以下版本，请勿降级使用
+
+0.5
+   - add	增加看门狗启动程序后日志输出
+   - update	优化公网访问ipt写入删除逻辑
+   - add	增加在线更新版本功能提示信息
+   - fix	修复脚本的一些bug
+   - update	alist二进制更新至2.6.4
+
+0.4
+   - update	优化二进制和web版本信息获取速度
+   - fix	修复因饿了么CDN失效导致后台白屏的问题
+   - update	修改默认静态资源位置为本地资源
+
+0.3
+   - fix	增加看门狗功能
+   - fix	修复启动后端口面板错误的问题
+   - add	增加开机自启系统日志输出
+   - update	优化手动覆盖安装后保留自定义设置
+   - update	更新alist二进制至v2.6.3
+   - add	增加alist二进制和web页面版本展示
+
+0.2
+   - fix	修复https证书无法设置问题
+   - add	增加自动更新插件功能
+		
+0.1
+   - add	支持开启https
+   - add	支持开启公网访问
+   - add	支持ax6000官改rog皮肤
+   - add	支持启动配置
