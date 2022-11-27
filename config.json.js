@@ -4,5 +4,5 @@
     "md5": "2462c953f8df0ce44474d6866a498fca", 
     "module": "alist", 
     "title": "Alist 文件列表", 
-    "version": "1.0"
+    "version": "1.1"
 }

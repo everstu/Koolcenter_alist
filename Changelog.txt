@@ -1,6 +1,9 @@
 KoolCenter Aliat Changelog for HND platform
 ===========================================
 
+1.1
+   - fix	修复web的一个小问题
+
 1.0
    - note	Alist插件上线软件中心，版本号从1.0开始
        		1. 软件中心的alist程序版本从V3开始。

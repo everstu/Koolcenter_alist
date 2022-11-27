@@ -556,9 +556,9 @@ function open_alist_hint(itemNum) {
 	}
 	if (itemNum == 9) {
 		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;alist运行在路由器上，如果访问alist面板，路由器上的alist程序会将面板所需要的网页、javaScript文件、图标等资源等发送给访问的设备，这会消耗不少的路由器cpu资源。<br/><br/>"
-		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;此时给alist后台面板配置静态CDN，这些相关的静态资源如：网页、javaScript文件、图标，就会从公网的CDN服务器商获取，而不再请求路由器内的alist程序。<br/><br/>"
-		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;你可以前往alist文档网站，获取alist官方提供的一些CDN地址。<br/><br/>"
-		_caption = "面板端口";
+		statusmenu += "&nbsp;&nbsp;&nbsp;&nbsp;此时给alist后台面板配置静态CDN，这些相关的静态资源如：网页、javaScript文件、图标，就会从公网的CDN服务器商获取，而不再请求路由器内的alist程序。<br/><br/>"
+		statusmenu += "&nbsp;&nbsp;&nbsp;&nbsp;你可以前往alist文档网站，获取alist官方提供的一些CDN地址。<br/><br/>"
+		_caption = "CDN地址";
 	}
 	if (itemNum == 10) {
 		width = "690px";
@@ -750,7 +750,7 @@ function mOut(obj){
 													</td>
 												</tr>
 												<tr id="al_cdn">
-													<th><a onmouseover="mOver(this, 10)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">静态资源CDN地址<lable id="warn_cdn" style="color:red;margin-left:5px"><lable></a></th>
+													<th><a onmouseover="mOver(this, 9)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">静态资源CDN地址<lable id="warn_cdn" style="color:red;margin-left:5px"><lable></a></th>
 													<td>
 													<input type="text" id="alist_cdn" style="width: 95%;" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="">
 													</td>
