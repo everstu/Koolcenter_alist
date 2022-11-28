@@ -179,28 +179,28 @@ install_now() {
 }
 
 checkIsNeedMigrate() {
-	local runDir="/koolshare/alist"
-	if [ -d ${runDir} ]; then
-		local binVersion=$(dbus get alist_bin_version)
-		if [ ! -z $binVersion ];then
-		  local version=${binVersion:0:1}
-		fi
-		if [ ! -z $version ] && [ $version -lt 3 ];then
+  local runDir="/koolshare/alist"
+  if [ -d ${runDir} ]; then
+    local binVersion=$(dbus get alist_bin_version)
+    if [ ! -z $binVersion ];then
+      local version=${binVersion:0:1}
+    fi
+    if [ ! -z $version ] && [ $version -lt 3 ];then
       echo_date "检测已安装alist_v2版，此次升级无法兼容升级！"
-			if [ ! -d /koolshare/alist_v2 ];then
-          echo_date "已备份alist_v2数据至/koolshare/alist_v2目录。"
-          mv /koolshare/alist /koolshare/alist_v2
-        else
-          echo_date "已有alist_v2数据备份，本次备份跳过。"
-			fi
+      if [ ! -d /koolshare/alist_v2 ];then
+        echo_date "已备份alist_v2数据至/koolshare/alist_v2目录。"
+        mv /koolshare/alist /koolshare/alist_v2
+      else
+        echo_date "已有alist_v2数据备份，本次备份跳过。"
+      fi
       #清理失效配置项
       dbus remove alist_assets
       dbus remove alist_cache_time
       dbus remove alist_cache_cleaup
       dbus remove alist_bin_version
       dbus remove alist_watchdog_time
-		fi
-	fi
+    fi
+  fi
 }
 
 install() {
