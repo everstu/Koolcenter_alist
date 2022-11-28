@@ -304,7 +304,7 @@ check_memory(){
     echo_date "✅️当前系统已经启用虚拟内存！"
   else
     local memory_size=$(free | grep Mem | awk '{print $2}');
-    if [ ! -z $memory_size ] && [ $(number_test ${memory_size}) != "0" ];then
+    if [ "$memory_size" != "0" ];then
       if [  $memory_size -le 750000 ];then
         echo_date "❌️插件启动异常"
         echo_date "❌️检测到系统内存为：${memory_size}KB，需挂载虚拟内存！"
