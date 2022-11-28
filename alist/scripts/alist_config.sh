@@ -74,6 +74,7 @@ makeConfig() {
 	dbus remove alist_key_error
 	dbus remove alist_url_error
 	dbus remove alist_cdn_error
+	dbus remove alist_memory_error
 
 	echo_date "➡️生成alist配置文件到${AlistBaseDir}/config.json！"
 	
@@ -335,7 +336,8 @@ start_process(){
 start() {
 	# 0. prepare
 	mkdir -p ${AlistBaseDir}
-	
+	check_memory
+
 	# 1. stop first
 	stop_process
 
@@ -471,6 +473,32 @@ check_status(){
 	else
 		http_response "Alist 插件未启用"
 	fi
+}
+
+#检查内存是否合规
+check_memory(){
+  local swap_size=$(free | grep Swap | awk '{print $2}');
+  echo_date "ℹ️检查系统内存是否合规！"
+  if [ "$swap_size" != "0" ];then
+    echo_date "✅️当前系统已经启用虚拟内存！"
+  else
+    local memory_size=$(free | grep Mem | awk '{print $2}');
+    if [ ! -z $memory_size ];then
+      if [  $memory_size -le 750000 ];then
+        echo_date "❌️插件启动异常"
+        echo_date "❌️检测到系统内存为：${memory_size}KB，需挂载虚拟内存！"
+        echo_date "❌️Alist程序对路由器开销极大，请挂载1G以上虚拟内存后重新启动插件！"
+        dbus set alist_memory_error=1
+        stop_process
+        exit
+      else
+        echo_date "⚠️Alist程序对路由器开销极大，建议挂载1G以上虚拟内存，以保证稳定！"
+      fi
+    else
+      echo_date"⚠️未查询到系统内存，请自行注意系统内存！"
+    fi
+    #close_in_five
+  fi
 }
 
 case $1 in

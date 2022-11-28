@@ -1,5 +1,8 @@
 KoolCenter Aliat Changelog for HND platform
 ===========================================
+1.2
+   - fix	修复安装脚本报错的问题
+   - add    新增路由器内存检测，防止内存不足杀进程
 
 1.1
    - fix	修复web的一个小问题
@@ -8,7 +11,7 @@ KoolCenter Aliat Changelog for HND platform
    - note	Alist插件上线软件中心，版本号从1.0开始
        		1. 软件中心的alist程序版本从V3开始。
        		2. 正在使用V2 alist的，建议卸载后安装
-       		2. 由于alist需要路由器较好性能，本插件目前仅支持hnd机型中的armv8机型！
+       		3. 由于alist需要路由器较好性能，本插件目前仅支持hnd机型中的armv8机型！
    - update	更新alist二进制至v3.5.1版本（arm64版本，采用upx --best压缩）
    - update	重写了alist插件的web，界面更简洁直观
    - update	看门狗升级为perp实时进程守护
