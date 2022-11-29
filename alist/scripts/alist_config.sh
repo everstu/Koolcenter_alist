@@ -45,6 +45,13 @@ detect_url() {
 	fi
 }
 
+dbus_rm(){
+	# remove key when value exist
+	if [ -n "$1" ];then
+		dbus remove $1
+	fi
+}
+
 detect_running_status(){
 	local BINNAME=$1
 	local PID
@@ -68,13 +75,6 @@ makeConfig() {
 	configHttps=false                     #是否开启https
 	configCertFile=''                     #https证书cert文件路径
 	configKeyFile=''                      #https证书key文件路径
-
-	# remove error
-	dbus remove alist_cert_error
-	dbus remove alist_key_error
-	dbus remove alist_url_error
-	dbus remove alist_cdn_error
-	dbus remove alist_memory_error
 
 	echo_date "➡️生成alist配置文件到${AlistBaseDir}/config.json！"
 	
@@ -298,33 +298,29 @@ makeConfig() {
 
 #检查内存是否合规
 check_memory(){
-  local swap_size=$(free | grep Swap | awk '{print $2}');
-  echo_date "ℹ️检查系统内存是否合规！"
-  if [ "$swap_size" != "0" ];then
-    echo_date "✅️当前系统已经启用虚拟内存！"
-  else
-    local memory_size=$(free | grep Mem | awk '{print $2}');
-    if [ "$memory_size" != "0" ];then
-      if [  $memory_size -le 750000 ];then
-        echo_date "❌️插件启动异常"
-        echo_date "❌️检测到系统内存为：${memory_size}KB，需挂载虚拟内存！"
-        echo_date "❌️Alist程序对路由器开销极大，请挂载1G以上虚拟内存后重新启动插件！"
-        dbus set alist_memory_error=1
-        stop_process
-        exit
-      else
-        echo_date "⚠️Alist程序对路由器开销极大，建议挂载1G以上虚拟内存，以保证稳定！"
-      fi
-    else
-      echo_date"⚠️未查询到系统内存，请自行注意系统内存！"
-    fi
-    #close_in_five
-  fi
-}
-
-auto_start() {
-	#echo "创建开机重启任务"
-	[ ! -L "/koolshare/init.d/S99alist.sh" ] && ln -sf /koolshare/scripts/alist_config.sh /koolshare/init.d/S99alist.sh
+	local swap_size=$(free | grep Swap | awk '{print $2}');
+	echo_date "ℹ️检查系统内存是否合规！"
+	if [ "$swap_size" != "0" ];then
+		echo_date "✅️当前系统已经启用虚拟内存！容量：${swap_size}KB"
+	else
+		local memory_size=$(free | grep Mem | awk '{print $2}');
+		if [ "$memory_size" != "0" ];then
+			if [  $memory_size -le 750000 ];then
+				echo_date "❌️插件启动异常！"
+				echo_date "❌️检测到系统内存为：${memory_size}KB，需挂载虚拟内存！"
+				echo_date "❌️Alist程序对路由器开销极大，请挂载1G及以上虚拟内存后重新启动插件！"
+				stop_process
+				dbus set alist_memory_error=1
+				dbus set alist_enable=0
+				exit
+			else
+				echo_date "⚠️Alist程序对路由器开销极大，建议挂载1G及以上虚拟内存，以保证稳定！"
+				dbus set alist_memory_warn=1
+			fi
+		else
+			echo_date"⚠️未查询到系统内存，请自行注意系统内存！"
+		fi
+	fi
 }
 
 start_process(){
@@ -337,7 +333,6 @@ start_process(){
 			#!/bin/sh
 			source /koolshare/scripts/base.sh
 			CMD="/koolshare/bin/alist --data ${AlistBaseDir} server"
-
 			if test \${1} = 'start' ; then 
 				exec >${ALIST_RUN_LOG} 2>&1
 				exec \$CMD
@@ -360,17 +355,27 @@ start_process(){
 }
 
 start() {
-	# 0. prepare
+	# 0. prepare folder if not exist
 	mkdir -p ${AlistBaseDir}
+
+	# 1. remove error
+	dbus_rm alist_cert_error
+	dbus_rm alist_key_error
+	dbus_rm alist_url_error
+	dbus_rm alist_cdn_error
+	dbus_rm alist_memory_error
+	dbus_rm alist_memory_warn
+
+	# 2. check_memory
 	check_memory
 
-	# 1. stop first
+	# 3. stop first
 	stop_process
 
-	# 2. gen config.json
+	# 4. gen config.json
 	makeConfig
 
-	# 3. 检测首次运行，给出账号密码
+	# 5. 检测首次运行，给出账号密码
 	if [ ! -f "${AlistBaseDir}/data.db" ]; then
 		echo_date "ℹ️检测到首次启动插件，生成用户和密码..."
 		/koolshare/bin/alist --data ${AlistBaseDir} admin >${AlistBaseDir}/admin.account 2>&1
@@ -386,7 +391,7 @@ start() {
 		fi
 	fi
 
-	# 4. gen version info everytime
+	# 6. gen version info everytime
 	/koolshare/bin/alist version >${AlistBaseDir}/alist.version
 	local BIN_VER=$(cat ${AlistBaseDir}/alist.version | grep -Ew "^Version" | awk '{print $2}')
 	local WEB_VER=$(cat ${AlistBaseDir}/alist.version | grep -Ew "^WebVersion" | awk '{print $2}')
@@ -395,10 +400,10 @@ start() {
 		dbus set alist_webver=${WEB_VER}
 	fi
 	
-	# 5. start process
+	# 7. start process
 	start_process
 
-	# 6. open port
+	# 8. open port
 	if [ "${alist_publicswitch}" == "1" ];then
 		open_port 
 	fi
@@ -512,8 +517,8 @@ start)
 	;;
 start_nat)
 	alist_pid=$(pidof alist)
-	if [ -z "$alist_pid" ]; then
-		logger "[软件中心-Alist看门狗]: 打开alist防火墙端口！"
+	if [ "${alist_enable}" == "1" ]; then
+		logger "[软件中心-NAT重启]: 打开alist防火墙端口！"
 		close_port
 		open_port
 	fi

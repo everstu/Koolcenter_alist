@@ -103,21 +103,10 @@ dbus_nset(){
 	fi
 }
 
-check_default_dbus_value(){
-	# set default value
-	dbus_nset alist_port "5244"
-	dbus_nset alist_cdn "/"
-	dbus_nset alist_token_expires_in "48"
-	dbus_nset alist_https "5244"
-	dbus_nset alist_port "5244"
-	dbus dbus_nset alist_cert_file "/etc/cert.pem"
-	dbus dbus_nset alist_key_file "/etc/key.pem"
-}
-
 install_now() {
 	# default value
-	local TITLE="Alist文件列表"
-	local DESCR="一款支持多种存储的目录文件列表程序，支持 web 浏览与 webdav，后端基于gin，前端使用react。"
+	local TITLE="Alist 文件列表"
+	local DESCR="一个支持多种存储的文件列表程序，使用 Gin 和 Solidjs。"
 	local PLVER=$(cat ${DIR}/version)
 
 	# stop signdog first
@@ -127,7 +116,7 @@ install_now() {
 		sh /koolshare/scripts/alist_config.sh stop
 	fi
 	
-	# remove file first
+	# remove some files first
 	find /koolshare/init.d/ -name "*alist*" | xargs rm -rf
 	rm -rf /koolshare/alist/alist.version >/dev/null 2>&1
 
@@ -145,7 +134,7 @@ install_now() {
 	[ ! -L "/koolshare/init.d/N99alist.sh" ] && ln -sf /koolshare/scripts/alist_config.sh /koolshare/init.d/N99alist.sh
 
 	# Permissions
-	chmod 755 /koolshare/scripts/* >/dev/null 2>&1
+	chmod +x /koolshare/scripts/* >/dev/null 2>&1
 	chmod +x /koolshare/bin/alist >/dev/null 2>&1
 
 	# dbus value
@@ -159,12 +148,9 @@ install_now() {
 
 	# 检查插件默认dbus值
 	dbus_nset alist_port "5244"
-	dbus_nset alist_cdn "/"
 	dbus_nset alist_token_expires_in "48"
-	dbus_nset alist_https "5244"
-	dbus_nset alist_port "5244"
-	dbus dbus_nset alist_cert_file "/etc/cert.pem"
-	dbus dbus_nset alist_key_file "/etc/key.pem"
+	dbus_nset alist_cert_file "/etc/cert.pem"
+	dbus_nset alist_key_file "/etc/key.pem"
 
 	# reenable
 	enable=$(dbus get alist_enable)
@@ -179,28 +165,28 @@ install_now() {
 }
 
 checkIsNeedMigrate() {
-  local runDir="/koolshare/alist"
-  if [ -d ${runDir} ]; then
-    local binVersion=$(dbus get alist_bin_version)
-    if [ ! -z $binVersion ];then
-      local version=${binVersion:0:1}
-    fi
-    if [ ! -z $version ] && [ $version -lt 3 ];then
-      echo_date "检测已安装alist_v2版，此次升级无法兼容升级！"
-      if [ ! -d /koolshare/alist_v2 ];then
-        echo_date "已备份alist_v2数据至/koolshare/alist_v2目录。"
-        mv /koolshare/alist /koolshare/alist_v2
-      else
-        echo_date "已有alist_v2数据备份，本次备份跳过。"
-      fi
-      #清理失效配置项
-      dbus remove alist_assets
-      dbus remove alist_cache_time
-      dbus remove alist_cache_cleaup
-      dbus remove alist_bin_version
-      dbus remove alist_watchdog_time
-    fi
-  fi
+	local runDir="/koolshare/alist"
+	if [ -d ${runDir} ]; then
+		local binVersion=$(dbus get alist_bin_version)
+		if [ -n $binVersion ];then
+			local version=${binVersion:0:1}
+		fi
+		if [ -n $version ] && [ $version -lt 3 ];then
+			echo_date "检测已安装alist_v2版，此次升级无法兼容升级！"
+			if [ ! -d /koolshare/alist_v2 ];then
+				echo_date "已备份alist_v2数据至/koolshare/alist_v2目录。"
+				mv /koolshare/alist /koolshare/alist_v2
+			else
+				echo_date "已有alist_v2数据备份，本次备份跳过。"
+			fi
+			#清理失效配置项
+			dbus remove alist_assets
+			dbus remove alist_cache_time
+			dbus remove alist_cache_cleaup
+			dbus remove alist_bin_version
+			dbus remove alist_watchdog_time
+		fi
+	fi
 }
 
 install() {
