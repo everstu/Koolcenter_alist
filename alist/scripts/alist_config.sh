@@ -509,7 +509,7 @@ check_status(){
 case $1 in
 start)
 	if [ "${alist_enable}" == "1" ]; then
-		start
+		start | tee -a ${LOG_FILE}
 		logger "[软件中心-开机自启]: Alist自启动成功！"
 	else
 		logger "[软件中心-开机自启]: Alist未开启，不自动启动！"
