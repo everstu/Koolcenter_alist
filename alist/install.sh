@@ -98,10 +98,12 @@ exit_install(){
 
 dbus_nset(){
 	# set key when value not exist
-	if [ -z "$2" ];then
+	local ret=$(dbus get $1)
+	if [ -z "${ret}" ];then
 		dbus set $1=$2
 	fi
 }
+
 
 install_now() {
 	# default value
@@ -153,10 +155,9 @@ install_now() {
 	dbus_nset alist_key_file "/etc/key.pem"
 
 	# reenable
-	enable=$(dbus get alist_enable)
 	if [ "${enable}" == "1" ];then
 		echo_date "重新启动alist插件！"
-		sh /koolshare/scripts/alist_config.sh start
+		sh /koolshare/scripts/alist_config.sh boot_up
 	fi
 
 	# finish

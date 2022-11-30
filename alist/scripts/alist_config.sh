@@ -2,7 +2,6 @@
 
 source /koolshare/scripts/base.sh
 eval $(dbus export alist_)
-
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 AlistBaseDir=/koolshare/alist
 LOG_FILE=/tmp/upload/alist_log.txt
@@ -69,12 +68,12 @@ detect_running_status(){
 }
 
 makeConfig() {
-	configPort=5244                       #监听端口
-	configTokenExpiresIn=48               #登录有效时间 单位小时
-	configSiteUrl=                        #清理失效缓存间隔
-	configHttps=false                     #是否开启https
-	configCertFile=''                     #https证书cert文件路径
-	configKeyFile=''                      #https证书key文件路径
+	configPort=5244
+	configTokenExpiresIn=48
+	configSiteUrl=
+	configHttps=false
+	configCertFile=''
+	configKeyFile=''
 
 	echo_date "➡️生成alist配置文件到${AlistBaseDir}/config.json！"
 	
@@ -153,11 +152,11 @@ makeConfig() {
 					else
 						echo_date "⚠️无法启用https，原因如下："
 						if [ -z "${CER_VERFY}" ]; then
-							echo_date "⚠️证书公钥Cert文件未配置！"
+							echo_date "⚠️证书公钥Cert文件错误，检测到这不是公钥文件！"
 							dbus set alist_cert_error=1
 						fi
 						if [ -z "${KEY_VERFY}" ]; then
-							echo_date "⚠️证书私钥Key文件未配置！"
+							echo_date "⚠️证书私钥Key文件错误，检测到这不是私钥文件！"
 							dbus set alist_key_error=1
 						fi
 					fi
@@ -175,11 +174,11 @@ makeConfig() {
 			else
 				echo_date "⚠️无法启用https，原因如下："
 				if [ -z "${alist_cert_file}" ]; then
-					echo_date "⚠️证书公钥Cert文件未配置！"
+					echo_date "⚠️证书公钥Cert文件路径未配置！"
 					dbus set alist_cert_error=1
 				fi
 				if [ -z "${alist_key_file}" ]; then
-					echo_date "⚠️证书私钥Key文件未配置！"
+					echo_date "⚠️证书私钥Key文件路径未配置！"
 					dbus set alist_key_error=1
 				fi
 			fi
@@ -255,7 +254,6 @@ makeConfig() {
 	else
 		BINDADDR="0.0.0.0"
 	fi
-
 
 	config='{
 			"force":false,
@@ -405,6 +403,7 @@ start() {
 
 	# 8. open port
 	if [ "${alist_publicswitch}" == "1" ];then
+		close_port >/dev/null 2>&1
 		open_port 
 	fi
 }
@@ -440,11 +439,14 @@ open_port() {
 		echo_date "ℹ️加载xt_comment.ko内核模块！"
 		insmod /lib/modules/${OS}/kernel/net/netfilter/xt_comment.ko
 	fi
-	
+
+	if [ $(number_test ${alist_port}) != "0" ]; then
+		dbus set alist_port="5244"
+	fi
 	local MATCH=$(iptables -t filter -S INPUT | grep "alist_rule")
 	if [ -z "${MATCH}" ];then
-		echo_date "🧱添加防火墙入站规则，打开alist端口：${configPort}"
-		iptables -I INPUT -p tcp --dport ${configPort} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
+		echo_date "🧱添加防火墙入站规则，打开alist端口：${alist_port}"
+		iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
 	fi
 }
 
@@ -513,6 +515,11 @@ start)
 		logger "[软件中心-开机自启]: Alist自启动成功！"
 	else
 		logger "[软件中心-开机自启]: Alist未开启，不自动启动！"
+	fi
+	;;
+boot_up)
+	if [ "${alist_enable}" == "1" ]; then
+		start | tee -a ${LOG_FILE}
 	fi
 	;;
 start_nat)
