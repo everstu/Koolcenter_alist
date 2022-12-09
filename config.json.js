@@ -7,5 +7,5 @@
 	"tags":"云同步",
 	"author":"fiswonder, sadog",
 	"link":"https://github.com/everstu/Koolcenter_alist",
-    "version": "1.3"
+    "version": "1.4"
 }
