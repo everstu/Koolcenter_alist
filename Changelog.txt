@@ -2,6 +2,7 @@ KoolCenter Aliat Changelog for HND platform
 ===========================================
 1.4.1
    - update	更新alist二进制版本到v3.9.2
+   - fix	修复迁移bug，去掉v2升级v3迁移备份处理
 
 1.4
    - update	更新alist二进制版本到v3.6.0
