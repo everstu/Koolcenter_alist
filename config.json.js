@@ -1,11 +1,11 @@
 {
+    "author": "fiswonder, sadog", 
     "description": "Alist. 一个支持多种存储的文件列表程序，使用 Gin 和 Solidjs", 
     "home_url": "Module_alist.asp", 
-    "md5": "fef5e536c38ce5c3e372f8e4250c6dcd", 
+    "link": "https://github.com/everstu/Koolcenter_alist", 
+    "md5": "e2a0f03dcda299568ed63fcc3ff9f853", 
     "module": "alist", 
+    "tags": "云同步", 
     "title": "Alist 文件列表", 
-	"tags":"云同步",
-	"author":"fiswonder, sadog",
-	"link":"https://github.com/everstu/Koolcenter_alist",
-    "version": "1.4"
+    "version": "1.4.1"
 }
