@@ -194,7 +194,7 @@ install() {
   get_model
   get_fw_type
   platform_test
-  checkIsNeedMigrate
+#  checkIsNeedMigrate #去掉检测，不支持v2升级备份，需自行备份
   install_now
 }
 
