@@ -1,5 +1,9 @@
 KoolCenter Aliat Changelog for HND platform
 ===========================================
+1.5
+   - fix	修复分区格式为jffs机型路由器只能在/tmp目录运行的问题 感谢TG网友：尤利乌斯(@chuzhongzai)的热心测试！！
+   - fix	开机自启增加20秒启动延迟，防止虚拟内存未挂载导致部分机型不启动
+   - update	更新alist二进制版本到v3.10.1
 1.4.2
    - fix	回退alist二进制版本到v3.8.0，v3.9.2二进制兼有容性问题
 

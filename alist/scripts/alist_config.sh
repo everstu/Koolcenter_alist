@@ -6,6 +6,7 @@ alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 AlistBaseDir=/koolshare/alist
 LOG_FILE=/tmp/upload/alist_log.txt
 LOCK_FILE=/var/lock/alist.lock
+configRunPath='/koolshare/alist/' #运行时db等文件存放目录 默认放到/koolshare/目录下
 BASH=${0##*/}
 ARGS=$@
 
@@ -28,7 +29,7 @@ number_test(){
 		''|*[!0-9]*)
 			echo 1
 			;;
-		*) 
+		*)
 			echo 0
 			;;
 	esac
@@ -67,6 +68,54 @@ detect_running_status(){
 	echo_date "🟢$1启动成功，pid：${PID}"
 }
 
+write_backup_job(){
+	sed -i '/alist_backupdb/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
+	echo_date "ℹ️[Tmp目录模式] 创建alist数据库备份任务" >> $LOG_FILE
+	cru a alist_backupdb  "*/1 * * * * /bin/sh /koolshare/scripts/alist_config.sh backup"
+}
+
+kill_cron_job() {
+	if [ -n "$(cru l | grep alist_backupdb)" ]; then
+		echo_date "ℹ️[Tmp目录模式] 删除alist数据库备份任务..."
+		sed -i '/alist_backupdb/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
+	fi
+}
+
+checkDbFilePath() {
+  local ACT=${1}
+	#检查db运行目录是放在/tmp还是/koolshare
+	if [ "${ACT}" = "start" ];then
+      #检查是否启动出错 在这里获取最新dbus值
+      local configRunTmp=$(dbus get alist_run_in_tmp)
+      #如果下面已经设置了dbus值不会再次设置方法。
+      if [ -z "${configRunTmp}" ] ; then
+	      local LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
+	      if [ "$LINUX_VER" = 41 ]; then
+          dbus set alist_run_in_tmp=1
+			    echo_date "⚠️检测到内核版本过低，设置Alist为Tmp目录模式！"
+          configRunTmp=1
+	      fi
+      fi
+      if [ -n "${configRunTmp}" ]; then
+          configRunPath='/tmp/run_alist/'
+          echo_date "⚠️[Tmp目录模式] Alist将运行在/tmp目录！"
+          mkdir -p /tmp/run_alist/
+          if [ ! -f "/tmp/run_alist/data.db" ]; then
+            cp -rf /koolshare/alist/data.db* /tmp/run_alist/ >/dev/null 2>&1
+            echo_date "➡️[Tmp目录模式] 复制alist数据库至使用目录！"
+          fi
+          write_backup_job
+      fi
+    else
+      if [ -f "/tmp/run_alist/data.db" ]; then
+        cp -rf /tmp/run_alist/data.db* /koolshare/alist/ >/dev/null 2>&1
+        echo_date "➡️[Tmp目录模式] 复制alist数据库至备份目录！"
+        rm -rf /tmp/run_alist/
+      fi
+      kill_cron_job
+	fi
+}
+
 makeConfig() {
 	configPort=5244
 	configTokenExpiresIn=48
@@ -76,21 +125,24 @@ makeConfig() {
 	configKeyFile=''
 
 	echo_date "➡️生成alist配置文件到${AlistBaseDir}/config.json！"
-	
+
 	# 初始化端口
 	if [ $(number_test ${alist_port}) != "0" ]; then
 		dbus set alist_port=${configPort}
 	else
 		configPort=${alist_port}
 	fi
-	
+
 	#初始化缓存清除时间
 	if [ $(number_test ${alist_token_expires_in}) != "0" ]; then
 		dbus set alist_token_expires_in=${configTokenExpiresIn}
 	else
 		configTokenExpiresIn=${alist_token_expires_in}
 	fi
-	
+
+	#检查alist运行DB目录
+	checkDbFilePath start
+
 	# 静态资源CDN
 	local configCdn=$(dbus get alist_cdn)
 	if [ -n "${configCdn}" ]; then
@@ -270,7 +322,7 @@ makeConfig() {
 					"user":"",
 					"password":"",
 					"name":"",
-					"db_file":"/koolshare/alist/data.db",
+					"db_file":"'${configRunPath}'data.db",
 					"table_prefix":"x_",
 					"ssl_mode":""
 				},
@@ -280,11 +332,12 @@ makeConfig() {
 					"cert_file":"'${configCertFile}'",
 					"key_file":"'${configKeyFile}'"
 				},
-			"temp_dir":"/koolshare/alist/temp",
+			"temp_dir":"'${configRunPath}'temp",
+			"bleve_dir":"'${configRunPath}'bleve",
 			"log":
 				{
 					"enable":false,
-					"name":"/koolshare/alist/alist.log",
+					"name":"'${configRunPath}'alist.log",
 					"max_size":10,
 					"max_backups":5,
 					"max_age":28,
@@ -331,12 +384,12 @@ start_process(){
 			#!/bin/sh
 			source /koolshare/scripts/base.sh
 			CMD="/koolshare/bin/alist --data ${AlistBaseDir} server"
-			if test \${1} = 'start' ; then 
+			if test \${1} = 'start' ; then
 				exec >${ALIST_RUN_LOG} 2>&1
 				exec \$CMD
 			fi
 			exit 0
-			
+
 		EOF
 		chmod +x /koolshare/perp/alist/rc.main
 		chmod +t /koolshare/perp/alist/
@@ -397,19 +450,20 @@ start() {
 		dbus set alist_binver=${BIN_VER}
 		dbus set alist_webver=${WEB_VER}
 	fi
-	
+
 	# 7. start process
 	start_process
 
 	# 8. open port
 	if [ "${alist_publicswitch}" == "1" ];then
 		close_port >/dev/null 2>&1
-		open_port 
+		open_port
 	fi
 }
 
 stop_process(){
 	local ALIST_PID=$(pidof alist)
+	checkDbFilePath stop
 	if [ -n "${ALIST_PID}" ]; then
 		echo_date "⛔关闭alist进程..."
 		if [ -f "/koolshare/perp/alist/rc.main" ]; then
@@ -424,10 +478,10 @@ stop_process(){
 stop_plugin() {
 	# 1 stop alist
 	stop_process
-	
+
 	# 2. remove log
 	rm -rf /tmp/upload/alist_run_log.txt
-	
+
 	# 3. close port
 	close_port
 }
@@ -459,6 +513,31 @@ close_port(){
 		sh /tmp/clean.sh > /dev/null 2>&1
 		rm /tmp/clean.sh
 	fi
+}
+
+start_backup(){
+  if [ -d "/koolshare/alist/" ] && [ -d "/tmp/run_alist/" ]; then
+    cd /koolshare/alist && ls -l data.db* | awk '{print $9}' > /tmp/alist_db_file_list.tmp
+    while read filename
+    do
+      local dbfile_curr="/tmp/run_alist/${filename}"
+      local dbfile_save="/koolshare/alist/${filename}"
+      if [ -f "${dbfile_curr}" ]; then
+        if [ ! -f "${dbfile_save}" ]; then
+            cp -rf ${dbpath_tmp} ${dbfile_save}
+            logger "[${0##*/}]：备份Alist ${filename} 数据库!"
+        else
+          local new=$(md5sum ${dbfile_curr} | awk '{print $1}')
+          local old=$(md5sum ${dbfile_save} | awk '{print $1}')
+          if [ "${new}" != "${old}" ] ; then
+              cp -rf ${dbfile_curr} ${dbfile_save}
+              logger "[${0##*/}]：Aist ${filename} 数据库变化，备份数据库!"
+          fi
+        fi
+      fi
+    done < /tmp/alist_db_file_list.tmp
+    rm -rf /tmp/alist_db_file_list.tmp
+  fi
 }
 
 show_password(){
@@ -511,6 +590,8 @@ check_status(){
 case $1 in
 start)
 	if [ "${alist_enable}" == "1" ]; then
+	  sleep 20 #延迟启动等待虚拟内存挂载
+	  true > ${LOG_FILE}
 		start | tee -a ${LOG_FILE}
 		logger "[软件中心-开机自启]: Alist自启动成功！"
 	else
@@ -519,6 +600,7 @@ start)
 	;;
 boot_up)
 	if [ "${alist_enable}" == "1" ]; then
+	  true > ${LOG_FILE}
 		start | tee -a ${LOG_FILE}
 	fi
 	;;
@@ -529,6 +611,9 @@ start_nat)
 		close_port
 		open_port
 	fi
+	;;
+backup)
+	start_backup
 	;;
 stop)
 	stop_plugin
