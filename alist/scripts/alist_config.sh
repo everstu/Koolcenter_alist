@@ -508,10 +508,10 @@ close_port(){
 	local IPTS=$(iptables -t filter -S | grep -w "alist_rule" | sed 's/-A/iptables -t filter -D/g')
 	if [ -n "${IPTS}" ];then
 		echo_date "🧱关闭本插件在防火墙上打开的所有端口!"
-		iptables -t filter -S | grep -w "alist_rule" | sed 's/-A/iptables -t filter -D/g' > /tmp/clean.sh
-		chmod +x /tmp/clean.sh
-		sh /tmp/clean.sh > /dev/null 2>&1
-		rm /tmp/clean.sh
+		iptables -t filter -S | grep -w "alist_rule" | sed 's/-A/iptables -t filter -D/g' > /tmp/alist_clean.sh
+		chmod +x /tmp/alist_clean.sh
+		sh /tmp/alist_clean.sh > /dev/null 2>&1
+		rm /tmp/alist_clean.sh
 	fi
 }
 
@@ -605,11 +605,16 @@ boot_up)
 	fi
 	;;
 start_nat)
-	alist_pid=$(pidof alist)
 	if [ "${alist_enable}" == "1" ]; then
-		logger "[软件中心-NAT重启]: 打开alist防火墙端口！"
-		close_port
-		open_port
+	  if [ "${alist_publicswitch}" == "1" ];then
+      logger "[软件中心-NAT重启]: 打开alist防火墙端口！"
+      sleep 10
+      close_port
+      sleep 2
+      open_port
+    else
+      logger "[软件中心-NAT重启]: Alist未开启公网访问，不打开湍口！"
+	  fi
 	fi
 	;;
 backup)
