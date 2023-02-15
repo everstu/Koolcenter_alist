@@ -118,16 +118,12 @@ checkDbFilePath() {
 	#检查db运行目录是放在/tmp还是/koolshare
 	if [ "${ACT}" = "start" ];then
 	  if [ $(check_usb2jffs_used_status) != "1" ]; then #未挂载usb2jffs就检测是否需要运行在/tmp目录
-      local configRunTmp="0"
       local LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
       if [ "$LINUX_VER" = 41 ]; then #内核过低就运行在Tmp目录
         echo_date "⚠️检测到内核版本过低，设置Alist为Tmp目录模式！"
-        configRunTmp="1"
-      fi
-      if [ "${configRunTmp}" == "1" ]; then
         configRunPath='/tmp/run_alist/'
-        echo_date "⚠️[Tmp目录模式] Alist将运行在/tmp目录！"
         echo_date "⚠️安装usb2jffs插件并成功挂载可恢复正常运行模式！"
+        echo_date "⚠️[Tmp目录模式] Alist将运行在/tmp目录！"
         mkdir -p /tmp/run_alist/
         if [ ! -f "/tmp/run_alist/data.db" ]; then
           cp -rf /koolshare/alist/data.db* /tmp/run_alist/ >/dev/null 2>&1
