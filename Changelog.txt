@@ -1,5 +1,8 @@
 KoolCenter Aliat Changelog for HND platform
 ===========================================
+1.5.2
+   - update	优化Alist在特定机型或安装挂载usb2jffs，无需在/tmp目录下
+
 1.5.1
    - fix	wan重启后端口偶发未开启的问题
    - update	更新alist二进制版本到v3.11.0

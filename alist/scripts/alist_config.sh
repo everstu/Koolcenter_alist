@@ -68,6 +68,21 @@ detect_running_status(){
 	echo_date "🟢$1启动成功，pid：${PID}"
 }
 
+check_usb2jffs_used_status(){
+	# 查看当前/jffs的挂载点是什么设备，如/dev/mtdblock9, /dev/sda1；有usb2jffs的时候，/dev/sda1，无usb2jffs的时候，/dev/mtdblock9，出问题未正确挂载的时候，为空
+	local cur_patition=$(df -h | /bin/grep /jffs | awk '{print $1}')
+	local jffs_device="not mount"
+	if [ -n "${cur_patition}" ];then
+  		jffs_device=${cur_patition}
+  fi
+	local mounted_nu=$(mount | /bin/grep "${jffs_device}" | grep -E "/tmp/mnt/|/jffs"|/bin/grep -c "/dev/s")
+	if [ "${mounted_nu}" -eq "2" ]; then
+    echo "1" #已安装并成功挂载
+  else
+  	echo "0" #未安装或未挂载
+  fi
+}
+
 write_backup_job(){
 	sed -i '/alist_backupdb/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
 	echo_date "ℹ️[Tmp目录模式] 创建alist数据库备份任务" >> $LOG_FILE
@@ -81,38 +96,48 @@ kill_cron_job() {
 	fi
 }
 
+restore_alist_used_db(){
+  if [ -f "/tmp/run_alist/data.db" ]; then
+    cp -rf /tmp/run_alist/data.db* /koolshare/alist/ >/dev/null 2>&1
+    echo_date "➡️[Tmp目录模式] 复制alist数据库至备份目录！"
+    rm -rf /tmp/run_alist/
+  fi
+  kill_cron_job
+}
+
+check_run_mode(){
+  if [ $(check_usb2jffs_used_status) == "1" ] && [ "${1}" == "start" ];then
+      echo_date "➡️检测到已安装插件usb2jffs并成功挂载，插件可以正常启动！"
+      restore_alist_used_db
+  fi
+}
+
 checkDbFilePath() {
   local ACT=${1}
+  check_run_mode ${ACT}
 	#检查db运行目录是放在/tmp还是/koolshare
 	if [ "${ACT}" = "start" ];then
-      #检查是否启动出错 在这里获取最新dbus值
-      local configRunTmp=$(dbus get alist_run_in_tmp)
-      #如果下面已经设置了dbus值不会再次设置方法。
-      if [ -z "${configRunTmp}" ] ; then
-	      local LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
-	      if [ "$LINUX_VER" = 41 ]; then
-          dbus set alist_run_in_tmp=1
-			    echo_date "⚠️检测到内核版本过低，设置Alist为Tmp目录模式！"
-          configRunTmp=1
-	      fi
+	  if [ $(check_usb2jffs_used_status) != "1" ]; then #未挂载usb2jffs就检测是否需要运行在/tmp目录
+      local configRunTmp="0"
+      local LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
+      if [ "$LINUX_VER" = 41 ]; then #内核过低就运行在Tmp目录
+        echo_date "⚠️检测到内核版本过低，设置Alist为Tmp目录模式！"
+        configRunTmp="1"
       fi
-      if [ -n "${configRunTmp}" ]; then
-          configRunPath='/tmp/run_alist/'
-          echo_date "⚠️[Tmp目录模式] Alist将运行在/tmp目录！"
-          mkdir -p /tmp/run_alist/
-          if [ ! -f "/tmp/run_alist/data.db" ]; then
-            cp -rf /koolshare/alist/data.db* /tmp/run_alist/ >/dev/null 2>&1
-            echo_date "➡️[Tmp目录模式] 复制alist数据库至使用目录！"
-          fi
-          write_backup_job
+      if [ "${configRunTmp}" == "1" ]; then
+        configRunPath='/tmp/run_alist/'
+        echo_date "⚠️[Tmp目录模式] Alist将运行在/tmp目录！"
+        echo_date "⚠️安装usb2jffs插件并成功挂载可恢复正常运行模式！"
+        mkdir -p /tmp/run_alist/
+        if [ ! -f "/tmp/run_alist/data.db" ]; then
+          cp -rf /koolshare/alist/data.db* /tmp/run_alist/ >/dev/null 2>&1
+          echo_date "➡️[Tmp目录模式] 复制alist数据库至使用目录！"
+        fi
+        write_backup_job
       fi
-    else
-      if [ -f "/tmp/run_alist/data.db" ]; then
-        cp -rf /tmp/run_alist/data.db* /koolshare/alist/ >/dev/null 2>&1
-        echo_date "➡️[Tmp目录模式] 复制alist数据库至备份目录！"
-        rm -rf /tmp/run_alist/
-      fi
-      kill_cron_job
+    fi
+  else
+    restore_alist_used_db
 	fi
 }
 
