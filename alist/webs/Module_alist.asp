@@ -119,15 +119,13 @@ function get_dbus_data(){
 
 function pannel_access(){
 	if(dbus["alist_enable"] == "1"){
-		//var protocol = location.protocol;
+		var protocol = location.protocol;
 		if(E("alist_publicswitch").checked){
 			if(E("alist_https").checked){
 				protocol = "https:";
 			}else{
 				protocol ="http:";
 			}
-		}else{
-			protocol ="http:";
 		}
 
 		var hostname = document.domain;
