@@ -119,13 +119,14 @@ function get_dbus_data(){
 
 function pannel_access(){
 	if(dbus["alist_enable"] == "1"){
-		var protocol = location.protocol;
 		if(E("alist_publicswitch").checked){
 			if(E("alist_https").checked){
 				protocol = "https:";
 			}else{
 				protocol ="http:";
 			}
+		}else{
+			protocol ="http:";
 		}
 
 		var hostname = document.domain;
@@ -138,9 +139,9 @@ function pannel_access(){
 				hostname = hostname.replace('.tocmcc.cn','-alist.tocmcc.cn');
 			}
 
-			webUiHref = protocol + "//" + hostname;
+			webUiHref = window.location.protocol + "//" + hostname;
 		}else{
-			webUiHref = protocol + "//" + location.hostname + ":" + dbus["alist_port"];
+			webUiHref = protocol + "//" + window.location.hostname + ":" + dbus["alist_port"];
 		}
 
 		if(!dbus["alist_url_error"] && dbus["alist_publicswitch"] == 1 && dbus["alist_site_url"]){
