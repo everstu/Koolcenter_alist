@@ -145,12 +145,12 @@ function pannel_access(){
 		}
 
 		if(!dbus["alist_url_error"] && dbus["alist_publicswitch"] == 1 && dbus["alist_site_url"]){
+			/**
+			* 暂时不判断是否未内网ip访问面板
+			* 理论上内网IP访问面板需要用内网IP访问
+			* 用外网域名会导致无法访问。
+			*/
 // 			if(! isInnerIPFn()){
-				/**
-				* 暂时不判断是否未内网ip访问面板
-				* 理论上内网IP访问面板需要用内网IP访问
-				* 用外网域名会导致无法访问。
-				*/
 				webUiHref = dbus["alist_site_url"];
 // 			}
 		}
