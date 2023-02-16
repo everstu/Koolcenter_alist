@@ -9,11 +9,13 @@
 ## 项目地址
 https://github.com/alist-org/alist
 
-## 文档地址
+## 官方信息  
 
-V3 https://alist.nn.ci/zh/guide/
+[官方TG交流群](https://t.me/alist_chat) `插件正常启动后的使用问题请查看文档或去官方TG交流群寻求帮助`
 
-V2 https://alist-doc.nn.ci/docs/intro
+V3文档 https://alist.nn.ci/zh/guide/
+
+V2文档 https://alist-doc.nn.ci/docs/intro
 
 ---
 
