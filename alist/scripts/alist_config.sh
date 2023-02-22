@@ -438,8 +438,14 @@ start() {
 	dbus_rm alist_memory_error
 	dbus_rm alist_memory_warn
 
-	# 2. check_memory
-	check_memory
+	# 2. system_check
+	if [ "${alist_disablecheck}" = "1" ]; then
+		echo_date "⚠️您已关闭系统检测功能，请自行留意路由器性能！"
+		echo_date "⚠️插件对路由器性能的影响请您自行处理！！！"
+	else
+	  #2.1 memory_check
+	  check_memory
+	fi
 
 	# 3. stop first
 	stop_process

@@ -37,7 +37,7 @@ a:focus {
 i {
     color: #FC0;
     font-style: normal;
-} 
+}
 .loadingBarBlock{
 	width:740px;
 }
@@ -87,12 +87,12 @@ var count_down;
 var _responseLen;
 var STATUS_FLAG;
 var noChange = 0;
-var params_check = ['alist_https', 'alist_publicswitch', 'alist_watchdog'];
+var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog'];
 var params_input = ['alist_cert_file', 'alist_key_file', 'alist_port', 'alist_cdn', 'alist_token_expires_in', 'alist_site_url', 'alist_watchdog_time'];
 
 String.prototype.myReplace = function(f, e){
-	var reg = new RegExp(f, "g"); 
-	return this.replace(reg, e); 
+	var reg = new RegExp(f, "g");
+	return this.replace(reg, e);
 }
 
 function init() {
@@ -319,7 +319,7 @@ function show_hide_element(){
 		}else{
 			E("al_cert").style.display = "";
 			E("al_key").style.display = "";
-		} 
+		}
 	}
 }
 
@@ -381,7 +381,7 @@ function save(flag){
 		if (E(params_input[i])) {
 			db_alist[params_input[i]] = E(params_input[i]).value;
 		}
-	} 
+	}
 	var id = parseInt(Math.random() * 100000000);
 	var postData = {"id": id, "method": "alist_config.sh", "params": ["web_submit"], "fields": db_alist};
 	$.ajax({
@@ -591,7 +591,7 @@ function open_alist_hint(itemNum) {
 		statusmenu += "&nbsp;&nbsp;&nbsp;&nbsp;6. 你也可以开启公网访问后填写https://ax86-alist.ddnsto.com到网站URL";
 		statusmenu += "</div>";
 		_caption = "说明：";
-		return overlib(statusmenu, OFFSETX, -160, OFFSETY, 10, RIGHT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, ''); 
+		return overlib(statusmenu, OFFSETX, -160, OFFSETY, 10, RIGHT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	}
 	if (itemNum == 5) {
 		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;采用perp对alist进程进行实时进程守护，这比一些定时检查脚本更有效率，当然如果alist程序在你的路由器上运行良好，完全可以不使用进程守护。"
@@ -613,7 +613,7 @@ function open_alist_hint(itemNum) {
 		statusmenu += "此时你想跟朋友分享资源的时候，复制某个文件连接，该连接仍然是http://192.168.50.1:5244/xxxx。<br/><br/>"
 		statusmenu += "&nbsp;&nbsp;&nbsp;&nbsp;如果你给路由器配置了ddns访问路由器：https://ax86u.ddns.com:8443，那么可以将：https://ax86u.ddns.com:5224填写进去，然后你复制的文件连接就会是：https://ax86u.ddns.com:5244/xxxx<br/><br/>"
 		_caption = "网站URL";
-		return overlib(statusmenu, OFFSETX, -160, OFFSETY, 10, RIGHT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, ''); 
+		return overlib(statusmenu, OFFSETX, -160, OFFSETY, 10, RIGHT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	}
 	if (itemNum == 9) {
 		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;alist运行在路由器上，如果访问alist面板，路由器上的alist程序会将面板所需要的网页、javaScript文件、图标等资源等发送给访问的设备，这会消耗不少的路由器cpu资源。<br/><br/>"
@@ -631,7 +631,15 @@ function open_alist_hint(itemNum) {
 		statusmenu += "&nbsp;&nbsp;&nbsp;&nbsp;证书Key文件路径(绝对路径)：<font color='#CC0066'>/etc/key.pem</font><br/><br/>";
 		statusmenu += "5️⃣如果你使用ddnsto内网穿透服务，请不要开启https选项！<br/><br/>";
 		_caption = "启用https：";
-		return overlib(statusmenu, OFFSETX, -30, OFFSETY, 10, RIGHT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, ''); 
+		return overlib(statusmenu, OFFSETX, -30, OFFSETY, 10, RIGHT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	}
+
+	if (itemNum == 11) {
+		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;开启系统检测功能可以防止因对路由器性能理解不足而出现的各种异常情况"
+		statusmenu += "<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;如果关闭系统检测，请确保可以理解并能处理路由器出现的各种异常情况！"
+		statusmenu += "<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;目前检测项目：内存大小和虚拟内存挂载情况（物理内存低于1G，强制挂载虚拟内存）"
+		statusmenu += "<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;由于alist对路由器资源占用较多，所以强烈建议为路由器配置1G及以上的虚拟内存，以保证alist的稳定运行！"
+		_caption = "关闭系统检测";
 	}
 
 	return overlib(statusmenu, OFFSETX, 10, OFFSETY, 10, RIGHT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
@@ -777,6 +785,12 @@ function mOut(obj){
 														<td colspan="2">Alist - 设置</td>
 													</tr>
 												</thead>
+												<tr id="dashboard">
+													<th><a onmouseover="mOver(this, 11)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">关闭系统检测</a></th>
+													<td>
+														<input type="checkbox" id="alist_disablecheck" style="vertical-align:middle;">
+													</td>
+												</tr>
 												<!--<tr><th colspan="2"><em>基础设置</em></th></tr>-->
 												<tr id="dashboard">
 													<th><a onmouseover="mOver(this, 5)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">实时进程守护</a></th>
@@ -834,7 +848,7 @@ function mOut(obj){
 													<td>
 													<input type="text" id="alist_key_file" style="width: 95%;" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="" placeholder="/tmp/etc/key.pem">
 													</td>
-												</tr> 
+												</tr>
 											</table>
 										</div>
 										<div id="alist_apply" class="apply_gen">

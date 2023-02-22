@@ -1,5 +1,8 @@
 KoolCenter Aliat Changelog for HND platform
 ===========================================
+1.5.4
+   - update	由于大多用户反馈的不想开启内存检测，增加系统检测开关按钮。
+
 1.5.3
    - fix	修复填写site_url的情况下，面板域名获取错误的问题
 
