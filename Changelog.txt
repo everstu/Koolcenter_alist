@@ -1,5 +1,9 @@
 KoolCenter Aliat Changelog for HND platform
 ===========================================
+1.6
+   - update	同步alist官方二进制v3.12.0
+   - update	官方二进制新增阿里云盘挂载方式，修复阿里云盘挂载BUG。
+
 1.5.4
    - update	由于大多用户反馈的不想开启内存检测，增加系统检测开关按钮。
 
