@@ -368,6 +368,12 @@ makeConfig() {
 	echo "${config}" >${AlistBaseDir}/config.json
 }
 
+#检查已开启插件
+check_enable_plugin(){
+	echo_date "ℹ️当前已开启如下插件："
+	echo_date "➡️"$(dbus listall |grep 'enable=1'|awk -F '_' '!a[$1]++'|awk -F '_' '{print "dbus get softcenter_module_"$1"_title"|"bash"}'|tr '\n' ',' | sed 's/,$/ /')
+}
+
 #检查内存是否合规
 check_memory(){
 	local swap_size=$(free | grep Swap | awk '{print $2}');
@@ -393,6 +399,7 @@ check_memory(){
 			echo_date"⚠️未查询到系统内存，请自行注意系统内存！"
 		fi
 	fi
+	echo_date "================================================================="
 }
 
 start_process(){
@@ -443,8 +450,12 @@ start() {
 	  echo_date "⚠️您已关闭系统检测功能，请自行留意路由器性能！"
 	  echo_date "⚠️插件对路由器性能的影响请您自行处理！！！"
 	else
+	  echo_date "=========================== 系统检测 ============================="
 	  #2.1 memory_check
 	  check_memory
+	  #2.2 enable_plugin
+	  check_enable_plugin
+	  echo_date "========================= 系统检测结束 ==========================="
 	fi
 
 	# 3. stop first
