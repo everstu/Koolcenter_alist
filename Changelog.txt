@@ -1,5 +1,9 @@
 KoolCenter Aliat Changelog for HND platform
 ===========================================
+1.6.2
+   - update	同步alist官方二进制v3.12.2
+   - fix	修复阿里云盘open驱动的一些问题。
+
 1.6.1
    - update	同步alist官方二进制v3.12.1
    - fix	修复阿里云盘open驱动的一些问题。
