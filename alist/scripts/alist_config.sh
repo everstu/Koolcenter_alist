@@ -10,7 +10,7 @@ configRunPath='/koolshare/alist/' #运行时db等文件存放目录 默认放到
 BASH=${0##*/}
 ARGS=$@
 
-set_lock(){
+set_lock() {
 	exec 233>${LOCK_FILE}
 	flock -n 233 || {
 		# bring back to original log
@@ -19,19 +19,19 @@ set_lock(){
 	}
 }
 
-unset_lock(){
+unset_lock() {
 	flock -u 233
 	rm -rf ${LOCK_FILE}
 }
 
-number_test(){
+number_test() {
 	case $1 in
-		''|*[!0-9]*)
-			echo 1
-			;;
-		*)
-			echo 0
-			;;
+	'' | *[!0-9]*)
+		echo 1
+		;;
+	*)
+		echo 0
+		;;
 	esac
 }
 
@@ -45,14 +45,14 @@ detect_url() {
 	fi
 }
 
-dbus_rm(){
+dbus_rm() {
 	# remove key when value exist
-	if [ -n "$1" ];then
+	if [ -n "$1" ]; then
 		dbus remove $1
 	fi
 }
 
-detect_running_status(){
+detect_running_status() {
 	local BINNAME=$1
 	local PID
 	local i=40
@@ -68,25 +68,25 @@ detect_running_status(){
 	echo_date "🟢$1启动成功，pid：${PID}"
 }
 
-check_usb2jffs_used_status(){
+check_usb2jffs_used_status() {
 	# 查看当前/jffs的挂载点是什么设备，如/dev/mtdblock9, /dev/sda1；有usb2jffs的时候，/dev/sda1，无usb2jffs的时候，/dev/mtdblock9，出问题未正确挂载的时候，为空
 	local cur_patition=$(df -h | /bin/grep /jffs | awk '{print $1}')
 	local jffs_device="not mount"
-	if [ -n "${cur_patition}" ];then
-  		jffs_device=${cur_patition}
-  fi
-	local mounted_nu=$(mount | /bin/grep "${jffs_device}" | grep -E "/tmp/mnt/|/jffs"|/bin/grep -c "/dev/s")
+	if [ -n "${cur_patition}" ]; then
+		jffs_device=${cur_patition}
+	fi
+	local mounted_nu=$(mount | /bin/grep "${jffs_device}" | grep -E "/tmp/mnt/|/jffs" | /bin/grep -c "/dev/s")
 	if [ "${mounted_nu}" -eq "2" ]; then
-    echo "1" #已安装并成功挂载
-  else
-  	echo "0" #未安装或未挂载
-  fi
+		echo "1" #已安装并成功挂载
+	else
+		echo "0" #未安装或未挂载
+	fi
 }
 
-write_backup_job(){
+write_backup_job() {
 	sed -i '/alist_backupdb/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
-	echo_date "ℹ️[Tmp目录模式] 创建alist数据库备份任务" >> $LOG_FILE
-	cru a alist_backupdb  "*/1 * * * * /bin/sh /koolshare/scripts/alist_config.sh backup"
+	echo_date "ℹ️[Tmp目录模式] 创建alist数据库备份任务" >>$LOG_FILE
+	cru a alist_backupdb "*/1 * * * * /bin/sh /koolshare/scripts/alist_config.sh backup"
 }
 
 kill_cron_job() {
@@ -96,45 +96,45 @@ kill_cron_job() {
 	fi
 }
 
-restore_alist_used_db(){
-  if [ -f "/tmp/run_alist/data.db" ]; then
-    cp -rf /tmp/run_alist/data.db* /koolshare/alist/ >/dev/null 2>&1
-    echo_date "➡️[Tmp目录模式] 复制alist数据库至备份目录！"
-    rm -rf /tmp/run_alist/
-  fi
-  kill_cron_job
+restore_alist_used_db() {
+	if [ -f "/tmp/run_alist/data.db" ]; then
+		cp -rf /tmp/run_alist/data.db* /koolshare/alist/ >/dev/null 2>&1
+		echo_date "➡️[Tmp目录模式] 复制alist数据库至备份目录！"
+		rm -rf /tmp/run_alist/
+	fi
+	kill_cron_job
 }
 
-check_run_mode(){
-  if [ $(check_usb2jffs_used_status) == "1" ] && [ "${1}" == "start" ];then
-      echo_date "➡️检测到已安装插件usb2jffs并成功挂载，插件可以正常启动！"
-      restore_alist_used_db
-  fi
+check_run_mode() {
+	if [ $(check_usb2jffs_used_status) == "1" ] && [ "${1}" == "start" ]; then
+		echo_date "➡️检测到已安装插件usb2jffs并成功挂载，插件可以正常启动！"
+		restore_alist_used_db
+	fi
 }
 
 checkDbFilePath() {
-  local ACT=${1}
-  check_run_mode ${ACT}
-  #检查db运行目录是放在/tmp还是/koolshare
-  if [ "${ACT}" = "start" ];then
-    if [ $(check_usb2jffs_used_status) != "1" ]; then #未挂载usb2jffs就检测是否需要运行在/tmp目录
-      local LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
-      if [ "$LINUX_VER" = 41 ]; then #内核过低就运行在Tmp目录
-        echo_date "⚠️检测到内核版本过低，设置Alist为Tmp目录模式！"
-        configRunPath='/tmp/run_alist/'
-        echo_date "⚠️安装usb2jffs插件并成功挂载可恢复正常运行模式！"
-        echo_date "⚠️[Tmp目录模式] Alist将运行在/tmp目录！"
-        mkdir -p /tmp/run_alist/
-        if [ ! -f "/tmp/run_alist/data.db" ]; then
-          cp -rf /koolshare/alist/data.db* /tmp/run_alist/ >/dev/null 2>&1
-          echo_date "➡️[Tmp目录模式] 复制alist数据库至使用目录！"
-        fi
-        write_backup_job
-      fi
-    fi
-  else
-    restore_alist_used_db
-  fi
+	local ACT=${1}
+	check_run_mode ${ACT}
+	#检查db运行目录是放在/tmp还是/koolshare
+	if [ "${ACT}" = "start" ]; then
+		if [ $(check_usb2jffs_used_status) != "1" ]; then #未挂载usb2jffs就检测是否需要运行在/tmp目录
+			local LINUX_VER=$(uname -r | awk -F"." '{print $1$2}')
+			if [ "$LINUX_VER" = 41 ]; then #内核过低就运行在Tmp目录
+				echo_date "⚠️检测到内核版本过低，设置Alist为Tmp目录模式！"
+				configRunPath='/tmp/run_alist/'
+				echo_date "⚠️安装usb2jffs插件并成功挂载可恢复正常运行模式！"
+				echo_date "⚠️[Tmp目录模式] Alist将运行在/tmp目录！"
+				mkdir -p /tmp/run_alist/
+				if [ ! -f "/tmp/run_alist/data.db" ]; then
+					cp -rf /koolshare/alist/data.db* /tmp/run_alist/ >/dev/null 2>&1
+					echo_date "➡️[Tmp目录模式] 复制alist数据库至使用目录！"
+				fi
+				write_backup_job
+			fi
+		fi
+	else
+		restore_alist_used_db
+	fi
 }
 
 makeConfig() {
@@ -317,7 +317,7 @@ makeConfig() {
 
 	# 公网/内网访问
 	local BINDADDR
-	local LANADDR=$(ifconfig br0|grep -Eo "inet addr.+"|awk -F ":| " '{print $3}' 2>/dev/null)
+	local LANADDR=$(ifconfig br0 | grep -Eo "inet addr.+" | awk -F ":| " '{print $3}' 2>/dev/null)
 	if [ "${alist_publicswitch}" != "1" ]; then
 		if [ -n "${LANADDR}" ]; then
 			BINDADDR=${LANADDR}
@@ -369,21 +369,21 @@ makeConfig() {
 }
 
 #检查已开启插件
-check_enable_plugin(){
+check_enable_plugin() {
 	echo_date "ℹ️当前已开启如下插件："
-	echo_date "➡️"$(dbus listall |grep 'enable=1'|awk -F '_' '!a[$1]++'|awk -F '_' '{print "dbus get softcenter_module_"$1"_title"|"bash"}'|tr '\n' ',' | sed 's/,$/ /')
+	echo_date "➡️"$(dbus listall | grep 'enable=1' | awk -F '_' '!a[$1]++' | awk -F '_' '{print "dbus get softcenter_module_"$1"_title"|"bash"}' | tr '\n' ',' | sed 's/,$/ /')
 }
 
 #检查内存是否合规
-check_memory(){
-	local swap_size=$(free | grep Swap | awk '{print $2}');
+check_memory() {
+	local swap_size=$(free | grep Swap | awk '{print $2}')
 	echo_date "ℹ️检查系统内存是否合规！"
-	if [ "$swap_size" != "0" ];then
+	if [ "$swap_size" != "0" ]; then
 		echo_date "✅️当前系统已经启用虚拟内存！容量：${swap_size}KB"
 	else
-		local memory_size=$(free | grep Mem | awk '{print $2}');
-		if [ "$memory_size" != "0" ];then
-			if [  $memory_size -le 750000 ];then
+		local memory_size=$(free | grep Mem | awk '{print $2}')
+		if [ "$memory_size" != "0" ]; then
+			if [ $memory_size -le 750000 ]; then
 				echo_date "❌️插件启动异常！"
 				echo_date "❌️检测到系统内存为：${memory_size}KB，需挂载虚拟内存！"
 				echo_date "❌️Alist程序对路由器开销极大，请挂载1G及以上虚拟内存后重新启动插件！"
@@ -402,7 +402,7 @@ check_memory(){
 	echo_date "================================================================="
 }
 
-start_process(){
+start_process() {
 	ALIST_RUN_LOG=/tmp/upload/alist_run_log.txt
 	rm -rf ${ALIST_RUN_LOG}
 	if [ "${alist_watchdog}" == "1" ]; then
@@ -447,15 +447,15 @@ start() {
 
 	# 2. system_check
 	if [ "${alist_disablecheck}" = "1" ]; then
-	  echo_date "⚠️您已关闭系统检测功能，请自行留意路由器性能！"
-	  echo_date "⚠️插件对路由器性能的影响请您自行处理！！！"
+		echo_date "⚠️您已关闭系统检测功能，请自行留意路由器性能！"
+		echo_date "⚠️插件对路由器性能的影响请您自行处理！！！"
 	else
-	  echo_date "=========================== 系统检测 ============================="
-	  #2.1 memory_check
-	  check_memory
-	  #2.2 enable_plugin
-	  check_enable_plugin
-	  echo_date "========================= 系统检测结束 ==========================="
+		echo_date "=========================== 系统检测 ============================="
+		#2.1 memory_check
+		check_memory
+		#2.2 enable_plugin
+		check_enable_plugin
+		echo_date "========================= 系统检测结束 ==========================="
 	fi
 
 	# 3. stop first
@@ -493,13 +493,13 @@ start() {
 	start_process
 
 	# 8. open port
-	if [ "${alist_publicswitch}" == "1" ];then
+	if [ "${alist_publicswitch}" == "1" ]; then
 		close_port >/dev/null 2>&1
 		open_port
 	fi
 }
 
-stop_process(){
+stop_process() {
 	local ALIST_PID=$(pidof alist)
 	checkDbFilePath stop
 	if [ -n "${ALIST_PID}" ]; then
@@ -527,7 +527,7 @@ stop_plugin() {
 open_port() {
 	local CM=$(lsmod | grep xt_comment)
 	local OS=$(uname -r)
-	if [ -z "${CM}" -a -f "/lib/modules/${OS}/kernel/net/netfilter/xt_comment.ko" ];then
+	if [ -z "${CM}" -a -f "/lib/modules/${OS}/kernel/net/netfilter/xt_comment.ko" ]; then
 		echo_date "ℹ️加载xt_comment.ko内核模块！"
 		insmod /lib/modules/${OS}/kernel/net/netfilter/xt_comment.ko
 	fi
@@ -536,49 +536,48 @@ open_port() {
 		dbus set alist_port="5244"
 	fi
 	local MATCH=$(iptables -t filter -S INPUT | grep "alist_rule")
-	if [ -z "${MATCH}" ];then
+	if [ -z "${MATCH}" ]; then
 		echo_date "🧱添加防火墙入站规则，打开alist端口：${alist_port}"
 		iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
 	fi
 }
 
-close_port(){
+close_port() {
 	local IPTS=$(iptables -t filter -S | grep -w "alist_rule" | sed 's/-A/iptables -t filter -D/g')
-	if [ -n "${IPTS}" ];then
+	if [ -n "${IPTS}" ]; then
 		echo_date "🧱关闭本插件在防火墙上打开的所有端口!"
-		iptables -t filter -S | grep -w "alist_rule" | sed 's/-A/iptables -t filter -D/g' > /tmp/alist_clean.sh
+		iptables -t filter -S | grep -w "alist_rule" | sed 's/-A/iptables -t filter -D/g' >/tmp/alist_clean.sh
 		chmod +x /tmp/alist_clean.sh
-		sh /tmp/alist_clean.sh > /dev/null 2>&1
+		sh /tmp/alist_clean.sh >/dev/null 2>&1
 		rm /tmp/alist_clean.sh
 	fi
 }
 
-start_backup(){
-  if [ -d "/koolshare/alist/" ] && [ -d "/tmp/run_alist/" ]; then
-    cd /koolshare/alist && ls -l data.db* | awk '{print $9}' > /tmp/alist_db_file_list.tmp
-    while read filename
-    do
-      local dbfile_curr="/tmp/run_alist/${filename}"
-      local dbfile_save="/koolshare/alist/${filename}"
-      if [ -f "${dbfile_curr}" ]; then
-        if [ ! -f "${dbfile_save}" ]; then
-            cp -rf ${dbpath_tmp} ${dbfile_save}
-            logger "[${0##*/}]：备份Alist ${filename} 数据库!"
-        else
-          local new=$(md5sum ${dbfile_curr} | awk '{print $1}')
-          local old=$(md5sum ${dbfile_save} | awk '{print $1}')
-          if [ "${new}" != "${old}" ] ; then
-              cp -rf ${dbfile_curr} ${dbfile_save}
-              logger "[${0##*/}]：Aist ${filename} 数据库变化，备份数据库!"
-          fi
-        fi
-      fi
-    done < /tmp/alist_db_file_list.tmp
-    rm -rf /tmp/alist_db_file_list.tmp
-  fi
+start_backup() {
+	if [ -d "/koolshare/alist/" ] && [ -d "/tmp/run_alist/" ]; then
+		cd /koolshare/alist && ls -l data.db* | awk '{print $9}' >/tmp/alist_db_file_list.tmp
+		while read filename; do
+			local dbfile_curr="/tmp/run_alist/${filename}"
+			local dbfile_save="/koolshare/alist/${filename}"
+			if [ -f "${dbfile_curr}" ]; then
+				if [ ! -f "${dbfile_save}" ]; then
+					cp -rf ${dbpath_tmp} ${dbfile_save}
+					logger "[${0##*/}]：备份Alist ${filename} 数据库!"
+				else
+					local new=$(md5sum ${dbfile_curr} | awk '{print $1}')
+					local old=$(md5sum ${dbfile_save} | awk '{print $1}')
+					if [ "${new}" != "${old}" ]; then
+						cp -rf ${dbfile_curr} ${dbfile_save}
+						logger "[${0##*/}]：Aist ${filename} 数据库变化，备份数据库!"
+					fi
+				fi
+			fi
+		done </tmp/alist_db_file_list.tmp
+		rm -rf /tmp/alist_db_file_list.tmp
+	fi
 }
 
-show_password(){
+show_password() {
 	# 1. 关闭server进程
 	# echo_date "查看密码前需要先关闭alist服务器主进程..."
 	# stop_process
@@ -603,12 +602,12 @@ show_password(){
 	# start_process
 }
 
-check_status(){
+check_status() {
 	local ALIST_PID=$(pidof alist)
 	if [ "${alist_enable}" == "1" ]; then
 		if [ -n "${ALIST_PID}" ]; then
 			if [ "${alist_watchdog}" == "1" ]; then
-				local alist_time=$(perpls|grep alist|grep -Eo "uptime.+-s\ " | awk -F" |:|/" '{print $3}')
+				local alist_time=$(perpls | grep alist | grep -Eo "uptime.+-s\ " | awk -F" |:|/" '{print $3}')
 				if [ -n "${alist_time}" ]; then
 					http_response "alist 进程运行正常！（PID：${ALIST_PID} , 守护运行时间：${alist_time}）"
 				else
@@ -628,8 +627,8 @@ check_status(){
 case $1 in
 start)
 	if [ "${alist_enable}" == "1" ]; then
-	  sleep 20 #延迟启动等待虚拟内存挂载
-	  true > ${LOG_FILE}
+		sleep 20 #延迟启动等待虚拟内存挂载
+		true >${LOG_FILE}
 		start | tee -a ${LOG_FILE}
 		logger "[软件中心-开机自启]: Alist自启动成功！"
 	else
@@ -638,21 +637,21 @@ start)
 	;;
 boot_up)
 	if [ "${alist_enable}" == "1" ]; then
-	  true > ${LOG_FILE}
+		true >${LOG_FILE}
 		start | tee -a ${LOG_FILE}
 	fi
 	;;
 start_nat)
 	if [ "${alist_enable}" == "1" ]; then
-	  if [ "${alist_publicswitch}" == "1" ];then
-      logger "[软件中心-NAT重启]: 打开alist防火墙端口！"
-      sleep 10
-      close_port
-      sleep 2
-      open_port
-    else
-      logger "[软件中心-NAT重启]: Alist未开启公网访问，不打开湍口！"
-	  fi
+		if [ "${alist_publicswitch}" == "1" ]; then
+			logger "[软件中心-NAT重启]: 打开alist防火墙端口！"
+			sleep 10
+			close_port
+			sleep 2
+			open_port
+		else
+			logger "[软件中心-NAT重启]: Alist未开启公网访问，不打开湍口！"
+		fi
 	fi
 	;;
 backup)
@@ -666,7 +665,7 @@ esac
 case $2 in
 web_submit)
 	set_lock
-	true > ${LOG_FILE}
+	true >${LOG_FILE}
 	http_response "$1"
 	# 调试
 	# echo_date "$BASH $ARGS" | tee -a ${LOG_FILE}
