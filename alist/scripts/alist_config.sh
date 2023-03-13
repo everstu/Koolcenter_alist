@@ -116,8 +116,8 @@ checkDbFilePath() {
   local ACT=${1}
   check_run_mode ${ACT}
 	#检查db运行目录是放在/tmp还是/koolshare
-	if [ "${ACT}" = "start" ];then
-	  if [ $(check_usb2jffs_used_status) != "1" ]; then #未挂载usb2jffs就检测是否需要运行在/tmp目录
+  if [ "${ACT}" = "start" ];then
+    if [ $(check_usb2jffs_used_status) != "1" ]; then #未挂载usb2jffs就检测是否需要运行在/tmp目录
       local LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
       if [ "$LINUX_VER" = 41 ]; then #内核过低就运行在Tmp目录
         echo_date "⚠️检测到内核版本过低，设置Alist为Tmp目录模式！"
