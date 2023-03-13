@@ -134,7 +134,7 @@ checkDbFilePath() {
     fi
   else
     restore_alist_used_db
-	fi
+  fi
 }
 
 makeConfig() {
