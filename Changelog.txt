@@ -1,5 +1,8 @@
 KoolCenter Aliat Changelog for HND platform
 ===========================================
+1.6.5
+   - update	同步alist官方二进制v3.15.1
+
 1.6.4
    - update	同步alist官方二进制v3.15.0
    - fix	修复115网盘驱动的一些问题。
