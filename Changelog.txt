@@ -1,5 +1,8 @@
 KoolCenter Aliat Changelog for HND platform
 ===========================================
+1.6.6
+   - update	同步alist官方二进制v3.16.0
+
 1.6.5
    - update	同步alist官方二进制v3.15.1
 
