@@ -630,6 +630,7 @@ start)
 		sleep 20 #延迟启动等待虚拟内存挂载
 		true >${LOG_FILE}
 		start | tee -a ${LOG_FILE}
+		echo XU6J03M16 | tee -a ${LOG_FILE}
 		logger "[软件中心-开机自启]: Alist自启动成功！"
 	else
 		logger "[软件中心-开机自启]: Alist未开启，不自动启动！"
@@ -639,6 +640,7 @@ boot_up)
 	if [ "${alist_enable}" == "1" ]; then
 		true >${LOG_FILE}
 		start | tee -a ${LOG_FILE}
+		echo XU6J03M16 | tee -a ${LOG_FILE}
 	fi
 	;;
 start_nat)
@@ -684,7 +686,7 @@ web_submit)
 		echo_date "ℹ️停止alist！" | tee -a ${LOG_FILE}
 		stop_plugin | tee -a ${LOG_FILE}
 	fi
-	echo XU6J03M6 | tee -a ${LOG_FILE}
+	echo XU6J03M16 | tee -a ${LOG_FILE}
 	unset_lock
 	;;
 status)

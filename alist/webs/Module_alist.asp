@@ -407,8 +407,8 @@ function get_log(flag){
 		dataType: 'text',
 		success: function(response) {
 			var retArea = E("log_content");
-			if (response.search("XU6J03M6") != -1) {
-				retArea.value = response.myReplace("XU6J03M6", " ");
+			if (response.search("XU6J03M16") != -1) {
+				retArea.value = response.myReplace("XU6J03M16", " ");
 				E("ok_button").style.visibility = "visible";
 				retArea.scrollTop = retArea.scrollHeight;
 				if(flag == 1){
@@ -422,7 +422,7 @@ function get_log(flag){
 				return false;
 			}
 			setTimeout("get_log(" + flag + ");", 500);
-			retArea.value = response.myReplace("XU6J03M6", " ");
+			retArea.value = response.myReplace("XU6J03M16", " ");
 			retArea.scrollTop = retArea.scrollHeight;
 		},
 		error: function(xhr) {
