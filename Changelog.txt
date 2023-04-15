@@ -2,6 +2,7 @@ KoolCenter Aliat Changelog for HND platform
 ===========================================
 1.6.6
    - update	同步alist官方二进制v3.16.0
+   - fix	修复脚本自启后，插件日志无关闭按钮的问题
 
 1.6.5
    - update	同步alist官方二进制v3.15.1
