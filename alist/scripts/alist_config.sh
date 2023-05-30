@@ -140,6 +140,7 @@ checkDbFilePath() {
 makeConfig() {
 	configPort=5244
 	configTokenExpiresIn=48
+	cofigMaxConnections=0
 	configSiteUrl=
 	configHttps=false
 	configCertFile=''
@@ -159,6 +160,14 @@ makeConfig() {
 		dbus set alist_token_expires_in=${configTokenExpiresIn}
 	else
 		configTokenExpiresIn=${alist_token_expires_in}
+	fi
+
+
+	#初始化最大并发连接数
+	if [ $(number_test ${alist_max_connections}) != "0" ]; then
+		dbus set alist_max_connections=${cofigMaxConnections}
+	else
+		cofigMaxConnections=${alist_max_connections}
 	fi
 
 	#检查alist运行DB目录
@@ -355,6 +364,7 @@ makeConfig() {
 				},
 			"temp_dir":"'${configRunPath}'temp",
 			"bleve_dir":"'${configRunPath}'bleve",
+			"max_connections":'${cofigMaxConnections}',
 			"log":
 				{
 					"enable":false,

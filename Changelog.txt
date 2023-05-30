@@ -1,5 +1,8 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
+1.7.2
+   - add	增加max_connections最大连接数配置项
+
 1.7.1
    - update	同步alist官方二进制v3.18.0
 

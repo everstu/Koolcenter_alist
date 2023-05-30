@@ -88,7 +88,7 @@ var _responseLen;
 var STATUS_FLAG;
 var noChange = 0;
 var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog'];
-var params_input = ['alist_cert_file', 'alist_key_file', 'alist_port', 'alist_cdn', 'alist_token_expires_in', 'alist_site_url', 'alist_watchdog_time'];
+var params_input = ['alist_cert_file', 'alist_key_file', 'alist_port', 'alist_cdn', 'alist_token_expires_in', 'alist_site_url', 'alist_watchdog_time', 'alist_max_connections'];
 
 String.prototype.myReplace = function(f, e){
 	var reg = new RegExp(f, "g");
@@ -644,6 +644,13 @@ function open_alist_hint(itemNum) {
 		_caption = "关闭系统检测";
 	}
 
+	if (itemNum == 12) {
+		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;同时最多的连接数(并发)，默认为0即不限制"
+		statusmenu += "<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;对于一般的设备比如n1推荐10或者20"
+		statusmenu += "<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;使用场景（例如打开图片模式会并发不是很好的设备就会崩溃）"
+		_caption = "最大并发连接数";
+	}
+
 	return overlib(statusmenu, OFFSETX, 10, OFFSETY, 10, RIGHT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 
 	var tag_name = document.getElementsByTagName('a');
@@ -818,6 +825,12 @@ function mOut(obj){
 													<td>
 														<input onkeyup="this.value=this.value.replace(/[^1-9][^0-9]*/,'')" style="width:30px;" type="text" class="input_ss_table" id="alist_token_expires_in" name="alist_token_expires_in" maxlength="4" autocorrect="off" autocapitalize="off" value="48">
 														<span>小时</span>
+													</td>
+												</tr>
+												<tr>
+													<th><a onmouseover="mOver(this, 12)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">最大并发连接数</a></th>
+													<td>
+														<input onkeyup="this.value=this.value.replace(/\D/g,'')" style="width:30px;" type="text" class="input_ss_table" id="alist_max_connections" name="alist_max_connections" maxlength="4" autocorrect="off" autocapitalize="off" value="0">
 													</td>
 												</tr>
 												<tr id="al_url">
