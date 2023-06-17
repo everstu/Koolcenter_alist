@@ -9,6 +9,17 @@ LOCK_FILE=/var/lock/alist.lock
 configRunPath='/koolshare/alist/' #运行时db等文件存放目录 默认放到/koolshare/目录下
 BASH=${0##*/}
 ARGS=$@
+#初始化配置变量
+configPort=5244
+configHttpsPort=5245
+configTokenExpiresIn=48
+cofigMaxConnections=0
+configSiteUrl=
+configDisableHttp=false
+configForceHttps=false
+configHttps=false
+configCertFile=''
+configKeyFile=''
 
 set_lock() {
 	exec 233>${LOCK_FILE}
@@ -138,14 +149,6 @@ checkDbFilePath() {
 }
 
 makeConfig() {
-	configPort=5244
-	configTokenExpiresIn=48
-	cofigMaxConnections=0
-	configSiteUrl=
-	configHttps=false
-	configCertFile=''
-	configKeyFile=''
-
 	echo_date "➡️生成alist配置文件到${AlistBaseDir}/config.json！"
 
 	# 初始化端口
@@ -162,12 +165,33 @@ makeConfig() {
 		configTokenExpiresIn=${alist_token_expires_in}
 	fi
 
-
 	#初始化最大并发连接数
 	if [ $(number_test ${alist_max_connections}) != "0" ]; then
 		dbus set alist_max_connections=${cofigMaxConnections}
 	else
 		cofigMaxConnections=${alist_max_connections}
+	fi
+
+	#初始化https端口
+	if [ $(number_test ${alist_https_port}) != "0" ]; then
+		dbus set alist_https_port="5245"
+	else
+		configHttpsPort=${alist_https_port}
+	fi
+
+	#初始化关闭http
+	if [ $(number_test ${alist_disable_http}) != "0" ]; then
+		dbus set alist_disable_http="0"
+	fi
+
+	#初始化强制跳转https
+	if [ $(number_test ${alist_force_https}) != "0" ]; then
+		dbus set alist_force_https="0"
+	fi
+
+	#初始化强制跳转https
+	if [ $(number_test ${alist_force_https}) != "0" ]; then
+		dbus set alist_force_https="0"
 	fi
 
 	#检查alist运行DB目录
@@ -267,6 +291,23 @@ makeConfig() {
 		fi
 	fi
 
+	#检查关闭http访问
+	if [ "${alist_disable_http}" == "1" ];then
+		configDisableHttp=true
+		if [ "${configHttps}" != "true" -a "${alist_disable_http}" == "1" ];then
+				echo_date "⚠️网站未开启https服务，不允许关闭http服务。"
+				configDisableHttp=false
+		fi
+		if [ "${configDisableHttp}" == "true" ];then
+			echo_date "🆗网站已关闭http服务。"
+		fi
+	else
+		if [ "${alist_force_https}" == "1" ];then
+			echo_date "🆗网站已开启强制跳转https。"
+			configForceHttps=true
+		fi
+	fi
+
 	# 网站url只有在开启公网访问后才可用，且未开https的时候，网站url不能配置为https
 	# 格式错误的时候，需要清空，以免面板入口用了这个URL导致无法访问
 	if [ "${alist_publicswitch}" == "1" ]; then
@@ -304,10 +345,16 @@ makeConfig() {
 						dbus set alist_url_error=1
 					else
 						# 路由器中使用网站URL的话，还必须配置端口
-						local MATCH_5=$(echo "${alist_site_url}" | grep -Eo ":${configPort}$")
+						if [ -n "${MATCH_3}" ];then
+							local rightPort=$configHttpsPort
+							local MATCH_5=$(echo "${alist_site_url}" | grep -Eo ":${configHttpsPort}$")
+						else
+							local rightPort=$configHttpsPort
+							local MATCH_5=$(echo "${alist_site_url}" | grep -Eo ":${configPort}$")
+						fi
 						if [ -z "${MATCH_5}" ]; then
 							echo_date "⚠️网站URL：${alist_site_url} 端口配置错误！"
-							echo_date "⚠️你需要为网站URL配置端口:${configPort}，不然会导致面alist部分功能出现问题！"
+							echo_date "⚠️你需要为网站URL配置端口:${rightPort}，不然会导致面alist部分功能出现问题！"
 							echo_date "⚠️本次插件启动不会将此网站URL写入配置，下次请更正，继续..."
 							dbus set alist_url_error=1
 						else
@@ -341,6 +388,7 @@ makeConfig() {
 			"force":false,
 			"address":"'${BINDADDR}'",
 			"port":'${configPort}',
+			"https_port":'${configHttpsPort}',
 			"jwt_secret":"random generated",
 			"token_expires_in":'${configTokenExpiresIn}',
 			"site_url":"'${configSiteUrl}'",
@@ -358,7 +406,9 @@ makeConfig() {
 				},
 			"scheme":
 				{
+					"disable_http":'${configDisableHttp}',
 					"https":'${configHttps}',
+					"force_https":'${configForceHttps}',
 					"cert_file":"'${configCertFile}'",
 					"key_file":"'${configKeyFile}'"
 				},
@@ -545,10 +595,21 @@ open_port() {
 	if [ $(number_test ${alist_port}) != "0" ]; then
 		dbus set alist_port="5244"
 	fi
+
+	if [ $(number_test ${alist_https_port}) != "0" ]; then
+		dbus set alist_https_port="5245"
+	fi
+
 	local MATCH=$(iptables -t filter -S INPUT | grep "alist_rule")
 	if [ -z "${MATCH}" ]; then
-		echo_date "🧱添加防火墙入站规则，打开alist端口：${alist_port}"
-		iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
+		if [ "${configDisableHttp}" != "true" ];then
+			echo_date "🧱添加防火墙入站规则，打开alist http 端口： ${alist_port}"
+			iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
+		fi
+		if [ "${configHttps}" == "true" ];then
+			echo_date "🧱添加防火墙入站规则，打开 alist https 端口： ${alist_https_port}"
+			iptables -I INPUT -p tcp --dport ${alist_https_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
+		fi
 	fi
 }
 

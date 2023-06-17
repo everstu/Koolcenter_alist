@@ -87,8 +87,8 @@ var count_down;
 var _responseLen;
 var STATUS_FLAG;
 var noChange = 0;
-var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog'];
-var params_input = ['alist_cert_file', 'alist_key_file', 'alist_port', 'alist_cdn', 'alist_token_expires_in', 'alist_site_url', 'alist_watchdog_time', 'alist_max_connections'];
+var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog','alist_force_https','alist_disable_http'];
+var params_input = ['alist_cert_file', 'alist_key_file', 'alist_port', 'alist_cdn', 'alist_token_expires_in', 'alist_site_url', 'alist_watchdog_time', 'alist_max_connections','alist_https_port'];
 
 String.prototype.myReplace = function(f, e){
 	var reg = new RegExp(f, "g");
@@ -312,13 +312,23 @@ function show_hide_element(){
 	}else{
 		E("al_url").style.display = "";
 		E("al_https").style.display = "";
-			E("al_cdn").style.display = "";
+		E("al_cdn").style.display = "";
 		if(E("alist_https").checked == false){
 			E("al_cert").style.display = "none";
 			E("al_key").style.display = "none";
+			E("al_https_port").style.display = "none";
+			E("al_disable_http").style.display = "none";
+			E("al_force_https").style.display = "none";
 		}else{
 			E("al_cert").style.display = "";
 			E("al_key").style.display = "";
+			E("al_https_port").style.display = "";
+			E("al_disable_http").style.display = "";
+			if(E("alist_disable_http").checked == false){
+			    E("al_force_https").style.display = "";
+			}else{
+			    E("al_force_https").style.display = "none";
+			}
 		}
 	}
 }
@@ -815,7 +825,7 @@ function mOut(obj){
 												</tr>
 												<!--<tr><th colspan="2"><em>配置文件</em> -- <em style="color: gold;">【请查看<a href="https://alist.nn.ci/zh/" target="_blank"><em>Alist官方文档</em></a>，不懂勿动！！！】</th></tr>-->
 												<tr id="alist_port_tr">
-													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板端口</a></th>
+													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板Http端口</a></th>
 													<td>
 														<input type="text" id="alist_port" style="width: 50px;" maxlength="5" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="5244">
 													</td>
@@ -850,6 +860,24 @@ function mOut(obj){
 													<td>
 														<input type="checkbox" id="alist_https" onchange="show_hide_element();" style="vertical-align:middle;" />
 														<span id="warn_cert" style="color:red;margin-left:5px;vertical-align:middle;font-size:11px;"><span>
+													</td>
+												</tr>
+												<tr id="al_https_port">
+													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板Https端口</a></th>
+													<td>
+														<input type="text" id="alist_https_port" style="width: 50px;" maxlength="5" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="5244">
+													</td>
+												</tr>
+												<tr id="al_disable_http">
+													<th><a onmouseover="mOver(this, 10)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">禁用http服务</a></th>
+													<td>
+														<input type="checkbox" id="alist_disable_http" onchange="show_hide_element();" style="vertical-align:middle;" />
+													</td>
+												</tr>
+												<tr id="al_force_https">
+													<th><a onmouseover="mOver(this, 10)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">强制跳转https</a></th>
+													<td>
+														<input type="checkbox" id="alist_force_https" style="vertical-align:middle;" />
 													</td>
 												</tr>
 												<tr id="al_cert">
