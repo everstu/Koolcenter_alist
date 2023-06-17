@@ -1,5 +1,10 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
+1.7.3
+   - update	同步alist官方二进制v3.19.0
+   - fix	修复阿里云盘的授权地址问题
+   - fix	修复139和189pc问题
+
 1.7.2
    - add	增加max_connections最大连接数配置项
 
