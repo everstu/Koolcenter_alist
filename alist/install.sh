@@ -153,6 +153,7 @@ install_now() {
 	dbus_nset alist_token_expires_in "48"
 	dbus_nset alist_cert_file "/etc/cert.pem"
 	dbus_nset alist_key_file "/etc/key.pem"
+	dbus_nset alist_check_ssl_cert "1"
 
 	# reenable
 	if [ "${enable}" == "1" ];then

@@ -20,6 +20,8 @@ configForceHttps=false
 configHttps=false
 configCertFile=''
 configKeyFile=''
+configDelayedStart=0
+configCheckSslCert=true
 
 set_lock() {
 	exec 233>${LOCK_FILE}
@@ -192,6 +194,18 @@ makeConfig() {
 	#初始化强制跳转https
 	if [ $(number_test ${alist_force_https}) != "0" ]; then
 		dbus set alist_force_https="0"
+	fi
+
+	#初始化验证SSL证书
+	if [ "${alist_check_ssl_cert}" == "0" ]; then
+		configCheckSslCert=false
+	fi
+
+	#初始化延迟启动时间
+	if [ $(number_test ${alist_delayed_start}) != "0" ]; then
+		dbus set alist_delayed_start=0
+	else
+		configDelayedStart=${alist_delayed_start}
 	fi
 
 	#检查alist运行DB目录
@@ -414,7 +428,6 @@ makeConfig() {
 				},
 			"temp_dir":"'${configRunPath}'temp",
 			"bleve_dir":"'${configRunPath}'bleve",
-			"max_connections":'${cofigMaxConnections}',
 			"log":
 				{
 					"enable":false,
@@ -423,7 +436,10 @@ makeConfig() {
 					"max_backups":5,
 					"max_age":28,
 					"compress":false
-				}
+				},
+			"delayed_start": '${configDelayedStart}',
+			"max_connections":'${cofigMaxConnections}',
+			"tls_insecure_skip_verify": '${configCheckSslCert}'
 			}'
 	echo "${config}" >${AlistBaseDir}/config.json
 }

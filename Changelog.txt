@@ -1,6 +1,11 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
 1.7.4
+   - update	增加alist延迟加载网盘时间设置
+   - update	增加是否校验ssl证书选项
+   - fix	web页面细节优化
+
+1.7.4
    - update	插件增加新特性允许http和https服务共存
    - update	增加官方https相关新配置项设置
 
