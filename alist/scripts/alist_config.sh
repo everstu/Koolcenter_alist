@@ -196,10 +196,10 @@ makeConfig() {
 		dbus set alist_force_https="0"
 	fi
 
-	#初始化验证SSL证书
-	if [ "${alist_check_ssl_cert}" == "0" ]; then
-		configCheckSslCert=false
-	fi
+#	#初始化验证SSL证书
+#	if [ "${alist_check_ssl_cert}" == "0" ]; then
+#		configCheckSslCert=false
+#	fi
 
 	#初始化延迟启动时间
 	if [ $(number_test ${alist_delayed_start}) != "0" ]; then

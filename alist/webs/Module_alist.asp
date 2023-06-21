@@ -87,7 +87,7 @@ var count_down;
 var _responseLen;
 var STATUS_FLAG;
 var noChange = 0;
-var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog','alist_force_https','alist_disable_http','alist_check_ssl_cert'];
+var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog','alist_force_https','alist_disable_http'];
 var params_input = ['alist_cert_file', 'alist_key_file', 'alist_port', 'alist_cdn', 'alist_token_expires_in', 'alist_site_url', 'alist_watchdog_time', 'alist_max_connections','alist_https_port','alist_delayed_start'];
 
 String.prototype.myReplace = function(f, e){
@@ -831,13 +831,13 @@ function mOut(obj){
 														<input type="checkbox" id="alist_publicswitch" onchange="show_hide_element();" style="vertical-align:middle;">
 													</td>
 												</tr>
-												<tr>
+												<!--<tr>
 													<th><a onmouseover="mOver(this, 13)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">检查SSL证书</a></th>
 													<td>
 														<input type="checkbox" id="alist_check_ssl_cert" style="vertical-align:middle;">
 													</td>
 												</tr>
-												<!--<tr><th colspan="2"><em>配置文件</em> -- <em style="color: gold;">【请查看<a href="https://alist.nn.ci/zh/" target="_blank"><em>Alist官方文档</em></a>，不懂勿动！！！】</th></tr>-->
+												<tr><th colspan="2"><em>配置文件</em> -- <em style="color: gold;">【请查看<a href="https://alist.nn.ci/zh/" target="_blank"><em>Alist官方文档</em></a>，不懂勿动！！！】</th></tr>-->
 												<tr id="alist_port_tr">
 													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板Http端口</a></th>
 													<td>
