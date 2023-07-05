@@ -176,14 +176,9 @@ makeConfig() {
 
 	#初始化https端口
 	if [ $(number_test ${alist_https_port}) != "0" ]; then
-		dbus set alist_https_port="5245"
+		dbus set alist_https_port=${configHttpsPort}
 	else
 		configHttpsPort=${alist_https_port}
-	fi
-
-	#初始化关闭http
-	if [ $(number_test ${alist_disable_http}) != "0" ]; then
-		dbus set alist_disable_http="0"
 	fi
 
 	#初始化强制跳转https
@@ -306,11 +301,13 @@ makeConfig() {
 	fi
 
 	#检查关闭http访问
-  if [ "${alist_force_https}" == "1" ];then
-    if [ "${configHttps}" == "true" ];then
-      echo_date "🆗网站已开启强制跳转https。"
+  if [ "${configHttps}" == "true" ];then
+    if [ "${alist_force_https}" == "1" ];then
+      echo_date "🆗 Alist 管理面板已开启强制跳转https。"
       configForceHttps=true
     fi
+  else
+    configHttpsPort="-1"
   fi
 
 	# 网站url只有在开启公网访问后才可用，且未开https的时候，网站url不能配置为https
