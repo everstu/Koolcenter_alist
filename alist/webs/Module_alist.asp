@@ -87,7 +87,7 @@ var count_down;
 var _responseLen;
 var STATUS_FLAG;
 var noChange = 0;
-var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog','alist_force_https','alist_disable_http'];
+var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog','alist_force_https'];
 var params_input = ['alist_cert_file', 'alist_key_file', 'alist_port', 'alist_cdn', 'alist_token_expires_in', 'alist_site_url', 'alist_watchdog_time', 'alist_max_connections','alist_https_port','alist_delayed_start'];
 
 String.prototype.myReplace = function(f, e){
@@ -144,7 +144,7 @@ function pannel_access(){
 			webUiHref = protocol + "//" + window.location.hostname + ":" + dbus["alist_port"];
 		}
 
-		if(!dbus["alist_url_error"] && dbus["alist_publicswitch"] == 1 && dbus["alist_site_url"]){
+		if(! dbus["alist_url_error"] && dbus["alist_publicswitch"] == 1 && dbus["alist_site_url"]){
 			/**
 			* 暂时不判断是否未内网ip访问面板
 			* 理论上内网IP访问面板需要用内网IP访问
@@ -154,6 +154,7 @@ function pannel_access(){
 				webUiHref = dbus["alist_site_url"];
 // 			}
 		}
+
 
 		E("fileb").href = webUiHref;
 		E("fileb").innerHTML = "访问 Alist 面板";
@@ -309,6 +310,8 @@ function show_hide_element(){
 		E("al_key").style.display = "none";
 		E("al_url").style.display = "none";
 		E("al_cdn").style.display = "none";
+        E("al_https_port").style.display = "none";
+        E("al_force_https").style.display = "none";
 	}else{
 		E("al_url").style.display = "";
 		E("al_https").style.display = "";
@@ -317,18 +320,19 @@ function show_hide_element(){
 			E("al_cert").style.display = "none";
 			E("al_key").style.display = "none";
 			E("al_https_port").style.display = "none";
-			E("al_disable_http").style.display = "none";
+// 			E("al_disable_http").style.display = "none";
 			E("al_force_https").style.display = "none";
 		}else{
 			E("al_cert").style.display = "";
 			E("al_key").style.display = "";
 			E("al_https_port").style.display = "";
-			E("al_disable_http").style.display = "";
-			if(E("alist_disable_http").checked == false){
+// 			E("al_disable_http").style.display = "";
+			E("al_force_https").style.display = "";
+			/* if(E("alist_disable_http").checked == false){
 			    E("al_force_https").style.display = "";
 			}else{
 			    E("al_force_https").style.display = "none";
-			}
+			} */
 		}
 	}
 }
@@ -889,12 +893,12 @@ function mOut(obj){
 														<input type="text" id="alist_https_port" style="width: 50px;" maxlength="5" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="5244">
 													</td>
 												</tr>
-												<tr id="al_disable_http">
+												<!-- <tr id="al_disable_http">
 													<th><a onmouseover="mOver(this, 10)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">禁用http服务</a></th>
 													<td>
 														<input type="checkbox" id="alist_disable_http" onchange="show_hide_element();" style="vertical-align:middle;" />
 													</td>
-												</tr>
+												</tr> -->
 												<tr id="al_force_https">
 													<th><a onmouseover="mOver(this, 10)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">强制跳转https</a></th>
 													<td>

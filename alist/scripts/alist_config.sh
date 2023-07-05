@@ -306,21 +306,12 @@ makeConfig() {
 	fi
 
 	#检查关闭http访问
-	if [ "${alist_disable_http}" == "1" ];then
-		configDisableHttp=true
-		if [ "${configHttps}" != "true" -a "${alist_disable_http}" == "1" ];then
-				echo_date "⚠️网站未开启https服务，不允许关闭http服务。"
-				configDisableHttp=false
-		fi
-		if [ "${configDisableHttp}" == "true" ];then
-			echo_date "🆗网站已关闭http服务。"
-		fi
-	else
-		if [ "${alist_force_https}" == "1" ];then
-			echo_date "🆗网站已开启强制跳转https。"
-			configForceHttps=true
-		fi
-	fi
+  if [ "${alist_force_https}" == "1" ];then
+    if [ "${configHttps}" == "true" ];then
+      echo_date "🆗网站已开启强制跳转https。"
+      configForceHttps=true
+    fi
+  fi
 
 	# 网站url只有在开启公网访问后才可用，且未开https的时候，网站url不能配置为https
 	# 格式错误的时候，需要清空，以免面板入口用了这个URL导致无法访问
@@ -400,9 +391,6 @@ makeConfig() {
 
 	config='{
 			"force":false,
-			"address":"'${BINDADDR}'",
-			"port":'${configPort}',
-			"https_port":'${configHttpsPort}',
 			"jwt_secret":"random generated",
 			"token_expires_in":'${configTokenExpiresIn}',
 			"site_url":"'${configSiteUrl}'",
@@ -420,11 +408,13 @@ makeConfig() {
 				},
 			"scheme":
 				{
-					"disable_http":'${configDisableHttp}',
-					"https":'${configHttps}',
+					"address":"'${BINDADDR}'",
+					"http_port":'${configPort}',
+					"https_port":'${configHttpsPort}',
 					"force_https":'${configForceHttps}',
 					"cert_file":"'${configCertFile}'",
-					"key_file":"'${configKeyFile}'"
+					"key_file":"'${configKeyFile}'",
+					"unix_file":""
 				},
 			"temp_dir":"'${configRunPath}'temp",
 			"bleve_dir":"'${configRunPath}'bleve",

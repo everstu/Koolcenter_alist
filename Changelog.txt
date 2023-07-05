@@ -1,6 +1,11 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
-1.7.4
+1.8
+   - update	更新alist二进制至v3.20.1版本
+   - fix	修复https端口问题
+   - fix	修复一些已知BUG
+
+1.7.5
    - update	增加alist延迟加载网盘时间设置
    - update	增加是否校验ssl证书选项
    - fix	web页面细节优化
