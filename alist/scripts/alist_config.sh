@@ -302,9 +302,15 @@ makeConfig() {
 
 	#检查关闭http访问
   if [ "${configHttps}" == "true" ];then
-    if [ "${alist_force_https}" == "1" ];then
-      echo_date "🆗 Alist 管理面板已开启强制跳转https。"
-      configForceHttps=true
+    if [ "${configHttpsPort}" == "${configPort}" ];then
+      configHttps=false
+      configHttpsPort="-1"
+      echo_date "⚠️ Alist 管理面板http和https端口相同，本次启动关闭https！"
+    else
+      if [ "${alist_force_https}" == "1" ];then
+        echo_date "🆗 Alist 管理面板已开启强制跳转https。"
+        configForceHttps=true
+      fi
     fi
   else
     configHttpsPort="-1"
