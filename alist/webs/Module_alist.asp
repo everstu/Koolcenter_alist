@@ -563,8 +563,9 @@ function open_alist_hint(itemNum) {
 		_caption = "运行状态";
 	}
 	if (itemNum == 3) {
-		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;点击【查看密码】可以显示当前面板的账号和密码，请注意：如果你需要配置webdav，同样应该使用此用户名和密码。<br/><br/>"
-		statusmenu = "&nbsp;&nbsp;&nbsp;&nbsp;点击【alist运行日志】可以实时查看alist程序的运行情况。"
+		statusmenu = "！！！请注意：v3.25版本后不允许查看密码，只能重新生成！<br/><br/>"
+		statusmenu += "&nbsp;&nbsp;&nbsp;&nbsp;点击【重置密码】可以重新生成当前面板的账号和密码，请注意：如果你需要配置webdav，同样应该使用此用户名和密码。<br/><br/>"
+		statusmenu += "&nbsp;&nbsp;&nbsp;&nbsp;点击【alist运行日志】可以实时查看alist程序的运行情况。"
 		_caption = "信息获取";
 	}
 	if (itemNum == 4) {
@@ -797,7 +798,7 @@ function mOut(obj){
 												<tr id="alist_info_tr" style="display: none;">
 													<th><a onmouseover="mOver(this, 3)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">信息获取</a></th>
 													<td>
-														<a type="button" style="vertical-align:middle;cursor:pointer;" class="ks_btn" href="javascript:void(0);" onclick="save(3)" style="margin-left:5px;">查看密码</a>
+														<a type="button" style="vertical-align:middle;cursor:pointer;" class="ks_btn" href="javascript:void(0);" onclick="save(3)" style="margin-left:5px;">重置密码</a>
 														<a type="button" class="ks_btn" href="javascript:void(0);" onclick="show_log_pannel()" style="margin-left:5px;">alist运行日志</a>
 													</td>
 												</tr>
