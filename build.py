@@ -2,10 +2,15 @@
 # _*_ coding:utf-8 _*_
 
 import os
+import sys
 import json
 import codecs
 import hashlib
-from string import Template 
+from string import Template
+
+if sys.getdefaultencoding() != 'gbk':
+    reload(sys)
+    sys.setdefaultencoding('gbk')
 
 parent_path = os.path.dirname(os.path.realpath(__file__))
 

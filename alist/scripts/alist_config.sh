@@ -616,7 +616,7 @@ open_port() {
       echo_date "🧱添加防火墙入站规则，打开alist http 端口： ${alist_port}"
       iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
     fi
-    if [ "${configHttps}" == "true" ]; then
+    if [ "${alist_https}" == "1" ]; then
       echo_date "🧱添加防火墙入站规则，打开 alist https 端口： ${alist_https_port}"
       iptables -I INPUT -p tcp --dport ${alist_https_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
     fi
@@ -628,7 +628,7 @@ open_port() {
     if [ "${configDisableHttp}" != "true" ]; then
       ip6tables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
     fi
-    if [ "${configHttps}" == "true" ]; then
+    if [ "${alist_https}" == "1" ]; then
       ip6tables -I INPUT -p tcp --dport ${alist_https_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
     fi
   fi
