@@ -1,5 +1,8 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
+1.8.9
+   - update	更新alist二进制至v3.27.0
+
 1.8.8
    - fix	修复防火墙端口未正确开启的问题。
    - update	更新alist二进制至v3.26.0
