@@ -312,27 +312,27 @@ function show_hide_element(){
 		E("al_cdn").style.display = "none";
         E("al_https_port").style.display = "none";
         E("al_force_https").style.display = "none";
-        E("alist_open_http_port").style.display = "none";
-        E("alist_open_https_port").style.display = "none";
+        E("al_open_http_port").style.display = "none";
+        E("al_open_https_port").style.display = "none";
 	}else{
 		E("al_url").style.display = "";
 		E("al_https").style.display = "";
 		E("al_cdn").style.display = "";
-        E("alist_open_http_port").style.display = "";
+        E("al_open_http_port").style.display = "";
 		if(E("alist_https").checked == false){
 			E("al_cert").style.display = "none";
 			E("al_key").style.display = "none";
 			E("al_https_port").style.display = "none";
 // 			E("al_disable_http").style.display = "none";
 			E("al_force_https").style.display = "none";
-            E("alist_open_https_port").style.display = "none";
+            E("al_open_https_port").style.display = "none";
 		}else{
 			E("al_cert").style.display = "";
 			E("al_key").style.display = "";
 			E("al_https_port").style.display = "";
 // 			E("al_disable_http").style.display = "";
 			E("al_force_https").style.display = "";
-            E("alist_open_https_port").style.display = "";
+            E("al_open_https_port").style.display = "";
 			/* if(E("alist_disable_http").checked == false){
 			    E("al_force_https").style.display = "";
 			}else{
@@ -852,7 +852,7 @@ function mOut(obj){
 													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板http端口</a></th>
 													<td>
 														<input type="text" id="alist_port" style="width: 50px;" maxlength="5" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="5244">
-													    <input type="checkbox" id="alist_open_http_port" style="vertical-align:middle;;margin-left:50px;">开放端口
+													    <span id="al_open_http_port"><input type="checkbox" id="alist_open_http_port" style="vertical-align:middle;;margin-left:50px;">开放公网端口</span>
 													</td>
 												</tr>
 												<tr>
@@ -898,7 +898,7 @@ function mOut(obj){
 													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板https端口</a></th>
 													<td>
 														<input type="text" id="alist_https_port" style="width: 50px;" maxlength="5" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="5245">
-													    <input type="checkbox" id="alist_open_https_port" style="vertical-align:middle;margin-left:50px;">开放端口
+													    <span id="al_open_https_port"><input type="checkbox" id="alist_open_https_port" style="vertical-align:middle;;margin-left:50px;">开放公网端口</span>
 													</td>
 												</tr>
 												<!-- <tr id="al_disable_http">
