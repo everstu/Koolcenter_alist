@@ -847,7 +847,7 @@ function mOut(obj){
 													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板http端口</a></th>
 													<td>
 														<input type="text" id="alist_port" style="width: 50px;" maxlength="5" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="5244">
-													    <input type="checkbox" id="alist_open_http_port" style="vertical-align:middle;">开放端口
+													    <input type="checkbox" id="alist_open_http_port" style="vertical-align:middle;;margin-left:50px;">开放端口
 													</td>
 												</tr>
 												<tr>
@@ -893,7 +893,7 @@ function mOut(obj){
 													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板https端口</a></th>
 													<td>
 														<input type="text" id="alist_https_port" style="width: 50px;" maxlength="5" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="5245">
-													    <input type="checkbox" id="alist_open_https_port" style="vertical-align:middle;">开放端口
+													    <input type="checkbox" id="alist_open_https_port" style="vertical-align:middle;margin-left:50px;">开放端口
 													</td>
 												</tr>
 												<!-- <tr id="al_disable_http">
