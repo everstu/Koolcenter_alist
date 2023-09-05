@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
@@ -87,7 +87,7 @@ var count_down;
 var _responseLen;
 var STATUS_FLAG;
 var noChange = 0;
-var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog','alist_force_https'];
+var params_check = ['alist_https', 'alist_publicswitch', 'alist_disablecheck', 'alist_watchdog', 'alist_force_https', 'alist_open_http_port', 'alist_open_https_port'];
 var params_input = ['alist_cert_file', 'alist_key_file', 'alist_port', 'alist_cdn', 'alist_token_expires_in', 'alist_site_url', 'alist_watchdog_time', 'alist_max_connections','alist_https_port','alist_delayed_start'];
 
 String.prototype.myReplace = function(f, e){
@@ -847,6 +847,7 @@ function mOut(obj){
 													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板http端口</a></th>
 													<td>
 														<input type="text" id="alist_port" style="width: 50px;" maxlength="5" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="5244">
+													    <input type="checkbox" id="alist_open_http_port" style="vertical-align:middle;">开放端口
 													</td>
 												</tr>
 												<tr>
@@ -892,6 +893,7 @@ function mOut(obj){
 													<th><a onmouseover="mOver(this, 7)" onmouseout="mOut(this)" class="hintstyle" href="javascript:void(0);">面板https端口</a></th>
 													<td>
 														<input type="text" id="alist_https_port" style="width: 50px;" maxlength="5" class="input_3_table" autocorrect="off" autocapitalize="off" style="background-color: rgb(89, 110, 116);" value="5245">
+													    <input type="checkbox" id="alist_open_https_port" style="vertical-align:middle;">开放端口
 													</td>
 												</tr>
 												<!-- <tr id="al_disable_http">
@@ -927,7 +929,8 @@ function mOut(obj){
 										</div>
 										<div style="margin: 10px 0 10px 5px;" class="splitLine"></div>
 										<div style="margin:10px 0 0 5px">
-											<li>由于alist需要路由器较好性能，本插件目前仅支持hnd机型中的armv8机型！</li>
+											<li>由于alist需要路由器较好性能，本插件仅支持hnd平台，AX32机型请慎重使用！</li>
+											<li>建议挂载U盘并配合usb2jffs和虚拟内存插件一起食用，口感更佳，否则可能会出现莫名的问题。</li>
 											<li>如有不懂，特别是alist配置文件的填写，请查看Alist官方文档<a href="https://alist.nn.ci/zh/" target="_blank"><em>点这里看文档</em></a></li>
 											<li>插件使用有任何问题请加入<a href="https://t.me/xbchat" target="_blank"><em><u>koolcenter TG群</u></em></a>或<a href="https://t.me/meilinchajian" target="_blank"><em><u>Mc Chat TG群</u></em></a>联系 @fiswonder<br></li>
 										</div>

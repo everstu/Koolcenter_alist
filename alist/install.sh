@@ -42,11 +42,7 @@ platform_test(){
 	local LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
 	local ARCH=$(uname -m)
 	if [ -d "/koolshare" -a -f "/usr/bin/skipd" -a "${LINUX_VER}" -ge "41" ];then
-		if [ "${ARCH}" != "aarch64" ];then
-			exit_install 2
-		else
-			echo_date 机型："${MODEL} ${FW_TYPE_NAME} 符合安装要求，开始安装插件！"
-		fi
+		echo_date 机型："${MODEL} ${FW_TYPE_NAME} 符合安装要求，开始安装插件！"
 	else
 		exit_install 1
 	fi
@@ -153,7 +149,6 @@ install_now() {
 	dbus_nset alist_token_expires_in "48"
 	dbus_nset alist_cert_file "/etc/cert.pem"
 	dbus_nset alist_key_file "/etc/key.pem"
-	dbus_nset alist_check_ssl_cert "1"
 
 	# reenable
 	if [ "${enable}" == "1" ];then

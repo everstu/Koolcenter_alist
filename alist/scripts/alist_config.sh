@@ -612,11 +612,11 @@ open_port() {
   # 开启IPV4防火墙端口
   local MATCH=$(iptables -t filter -S INPUT | grep "alist_rule")
   if [ -z "${MATCH}" ]; then
-    if [ "${configDisableHttp}" != "true" ]; then
+    if [ "${configDisableHttp}" != "true" -a "${alist_open_http_port}" == "1" ]; then
       echo_date "🧱添加防火墙入站规则，打开alist http 端口： ${alist_port}"
       iptables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
     fi
-    if [ "${alist_https}" == "1" ]; then
+    if [ "${alist_https}" == "1" -a "${alist_open_https_port}" == "1" ]; then
       echo_date "🧱添加防火墙入站规则，打开 alist https 端口： ${alist_https_port}"
       iptables -I INPUT -p tcp --dport ${alist_https_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
     fi
@@ -625,10 +625,10 @@ open_port() {
   local v6tables=$(which ip6tables);
   local MATCH6=$(ip6tables -t filter -S INPUT | grep "alist_rule")
   if [ -z "${MATCH6}" ] && [ -n "${v6tables}" ]; then
-    if [ "${configDisableHttp}" != "true" ]; then
+    if [ "${configDisableHttp}" != "true" -a "${alist_open_http_port}" == "1" ]; then
       ip6tables -I INPUT -p tcp --dport ${alist_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
     fi
-    if [ "${alist_https}" == "1" ]; then
+    if [ "${alist_https}" == "1" -a "${alist_open_https_port}" == "1" ]; then
       ip6tables -I INPUT -p tcp --dport ${alist_https_port} -j ACCEPT -m comment --comment "alist_rule" >/dev/null 2>&1
     fi
   fi
