@@ -1,5 +1,8 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
+1.9.3
+   - fix     版本未自动更新的问题
+
 1.9.2
    - update     更新alist二进制至v3.29.1
 
