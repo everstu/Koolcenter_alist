@@ -120,16 +120,15 @@ function get_dbus_data(){
 function pannel_access(){
     let protocol,hostname,webUiHref,port;
 	if(dbus["alist_enable"] == "1"){
-				port = dbus["alist_port"];
+		port = dbus["alist_port"];
+		protocol = window.location.protocol;
 		if(E("alist_publicswitch").checked){
-			if(E("alist_https").checked){
-				protocol = "https:";
+			if(protocol == 'https:'{
 				port = dbus["alist_https_port"];
-			}else{
-				protocol ="http:";
+				if(port == "443"){
+                    port = "";
+				}
 			}
-		}else{
-			protocol ="http:";
 		}
 
 		hostname = document.domain;
@@ -144,7 +143,10 @@ function pannel_access(){
 
 			webUiHref = window.location.protocol + "//" + hostname;
 		}else{
-			webUiHref = protocol + "//" + window.location.hostname + ":" + port;
+			webUiHref = protocol + "//" + window.location.hostname;
+            if(port){
+                webUiHref += ":" + port;
+            }
 		}
 
 		if(! dbus["alist_url_error"] && dbus["alist_publicswitch"] == 1 && dbus["alist_site_url"]){

@@ -698,8 +698,8 @@ random_password() {
 		echo_date "重启alist进程..."
 		stop_process
 
-  # 3. 重启进程
-   start_process
+		# 3. 重启进程
+		start_process
 }
 
 check_status() {
