@@ -132,7 +132,7 @@ function pannel_access(){
 			protocol ="http:";
 		}
 
-		var hostname = document.domain;
+		hostname = document.domain;
 		if (hostname.indexOf('.kooldns.cn') != -1 || hostname.indexOf('.ddnsto.com') != -1 || hostname.indexOf('.tocmcc.cn') != -1) {
 			if(hostname.indexOf('.kooldns.cn') != -1){
 				hostname = hostname.replace('.kooldns.cn','-alist.kooldns.cn');
