@@ -679,9 +679,9 @@ start_backup() {
 }
 
 random_password() {
-  # 1. 关闭server进程
-  # echo_date "查看密码前需要先关闭alist服务器主进程..."
-  # stop_process
+   #1. 关闭server进程
+   echo_date "重置密码先关闭alist服务器主进程..."
+   stop_process
 
   # 2. 查询密码
   echo_date "🔍重新生成alist面板的用户和随机密码..."
@@ -700,7 +700,7 @@ random_password() {
   fi
 
   # 3. 重启进程
-  # start_process
+   start_process
 }
 
 check_status() {

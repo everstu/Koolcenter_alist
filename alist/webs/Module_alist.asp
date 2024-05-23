@@ -118,10 +118,13 @@ function get_dbus_data(){
 }
 
 function pannel_access(){
+    let protocol,hostname,webUiHref,port;
 	if(dbus["alist_enable"] == "1"){
+				port = dbus["alist_port"];
 		if(E("alist_publicswitch").checked){
 			if(E("alist_https").checked){
 				protocol = "https:";
+				port = dbus["alist_https_port"];
 			}else{
 				protocol ="http:";
 			}
@@ -141,15 +144,13 @@ function pannel_access(){
 
 			webUiHref = window.location.protocol + "//" + hostname;
 		}else{
-			webUiHref = protocol + "//" + window.location.hostname + ":" + dbus["alist_port"];
+			webUiHref = protocol + "//" + window.location.hostname + ":" + port;
 		}
 
 		if(! dbus["alist_url_error"] && dbus["alist_publicswitch"] == 1 && dbus["alist_site_url"]){
-			/**
-			* 暂时不判断是否未内网ip访问面板
-			* 理论上内网IP访问面板需要用内网IP访问
-			* 用外网域名会导致无法访问。
-			*/
+		    //暂时不判断是否未内网ip访问面板
+			//理论上内网IP访问面板需要用内网IP访问
+			//用外网域名会导致无法访问。
 // 			if(! isInnerIPFn()){
 				webUiHref = dbus["alist_site_url"];
 // 			}
