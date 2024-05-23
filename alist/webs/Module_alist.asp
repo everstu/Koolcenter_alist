@@ -122,14 +122,10 @@ function pannel_access(){
 	if(dbus["alist_enable"] == "1"){
 		port = dbus["alist_port"];
 		protocol = window.location.protocol;
-		if(E("alist_publicswitch").checked){
-			if(protocol == 'https:'{
-				port = dbus["alist_https_port"];
-				if(port == "443"){
-                    port = "";
-				}
-			}
-		}
+        if(dbus['alist_open_https_port'] == '1'){
+            port = dbus["alist_https_port"];
+            protocol = 'https:';
+        }
 
 		hostname = document.domain;
 		if (hostname.indexOf('.kooldns.cn') != -1 || hostname.indexOf('.ddnsto.com') != -1 || hostname.indexOf('.tocmcc.cn') != -1) {
