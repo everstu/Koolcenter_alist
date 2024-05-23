@@ -679,11 +679,7 @@ start_backup() {
 }
 
 random_password() {
-   #1. 关闭server进程
-   echo_date "重置密码先关闭alist服务器主进程..."
-   stop_process
-
-  # 2. 查询密码
+  # 1. 重新生成密码
   echo_date "🔍重新生成alist面板的用户和随机密码..."
   /koolshare/bin/alist --data ${AlistBaseDir} admin random > ${AlistBaseDir}/admin.account 2>&1
   local USER=$(cat ${AlistBaseDir}/admin.account | grep "username" | awk '{print $NF}')
@@ -698,6 +694,9 @@ random_password() {
   else
     echo_date "⚠️面板账号密码获取失败！请重启路由后重试！"
   fi
+		#2. 关闭server进程
+		echo_date "重启alist进程..."
+		stop_process
 
   # 3. 重启进程
    start_process
