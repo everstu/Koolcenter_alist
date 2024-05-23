@@ -122,7 +122,7 @@ function pannel_access(){
 	if(dbus["alist_enable"] == "1"){
 		port = dbus["alist_port"];
 		protocol = window.location.protocol;
-        if(dbus['alist_open_https_port'] == '1'){
+        if(dbus['alist_https'] == '1' && dbus['alist_open_https_port'] == '1'){
             port = dbus["alist_https_port"];
             protocol = 'https:';
         }
