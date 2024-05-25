@@ -1,5 +1,8 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
+2.0.1
+   - update     更新alist二进制至v3.35.0
+
 2.0.0
    - fix     优化面板地址获取逻辑（优先使用site_url设置，其次是ddnsto相关域名，最后获访问域名）
    - fix     修复重置密码可能需要手动重启的问题。
