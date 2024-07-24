@@ -98,7 +98,7 @@ check_usb2jffs_used_status() {
 
 write_backup_job() {
   sed -i '/alist_backupdb/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
-  echo_date "ℹ️[Tmp目录模式] 创建alist数据库备份任务" >>$LOG_FILE
+  echo_date "ℹ️[Tmp目录模式] 创建alist数据库备份任务"
   cru a alist_backupdb "*/1 * * * * /bin/sh /koolshare/scripts/alist_config.sh backup"
 }
 
@@ -110,10 +110,10 @@ kill_cron_job() {
 }
 
 restore_alist_used_db() {
-  if [ -f "/tmp/run_alist/data.db" ]; then
-    cp -rf /tmp/run_alist/data.db* /koolshare/alist/ >/dev/null 2>&1
+  if [ -f "/tmp/upload/run_alist/data.db" ]; then
+    cp -rf /tmp/upload/run_alist/data.db* /koolshare/alist/ >/dev/null 2>&1
     echo_date "➡️[Tmp目录模式] 复制alist数据库至备份目录！"
-    rm -rf /tmp/run_alist/
+    rm -rf /tmp/upload/run_alist/
   fi
   kill_cron_job
 }
@@ -134,12 +134,12 @@ checkDbFilePath() {
       local LINUX_VER=$(uname -r | awk -F"." '{print $1$2}')
       if [ "$LINUX_VER" = 41 ]; then #内核过低就运行在Tmp目录
         echo_date "⚠️检测到内核版本过低，设置Alist为Tmp目录模式！"
-        configRunPath='/tmp/run_alist/'
+        configRunPath='/tmp/upload/run_alist/'
         echo_date "⚠️安装usb2jffs插件并成功挂载可恢复正常运行模式！"
         echo_date "⚠️[Tmp目录模式] Alist将运行在/tmp目录！"
-        mkdir -p /tmp/run_alist/
-        if [ ! -f "/tmp/run_alist/data.db" ]; then
-          cp -rf /koolshare/alist/data.db* /tmp/run_alist/ >/dev/null 2>&1
+        mkdir -p /tmp/upload/run_alist/
+        if [ ! -f "/tmp/upload/run_alist/data.db" ]; then
+          cp -rf /koolshare/alist/data.db* /tmp/upload/run_alist/ >/dev/null 2>&1
           echo_date "➡️[Tmp目录模式] 复制alist数据库至使用目录！"
         fi
         write_backup_job
@@ -655,10 +655,10 @@ close_port() {
 }
 
 start_backup() {
-  if [ -d "/koolshare/alist/" ] && [ -d "/tmp/run_alist/" ]; then
+  if [ -d "/koolshare/alist/" ] && [ -d "/tmp/upload/run_alist/" ]; then
     cd /koolshare/alist && ls -l data.db* | awk '{print $9}' >/tmp/alist_db_file_list.tmp
     while read filename; do
-      local dbfile_curr="/tmp/run_alist/${filename}"
+      local dbfile_curr="/tmp/upload/run_alist/${filename}"
       local dbfile_save="/koolshare/alist/${filename}"
       if [ -f "${dbfile_curr}" ]; then
         if [ ! -f "${dbfile_save}" ]; then
@@ -696,10 +696,11 @@ random_password() {
   fi
 		#2. 关闭server进程
 		echo_date "重启alist进程..."
-		stop_process
+		stop_process > /dev/null 2>&1
 
 		# 3. 重启进程
-		start_process
+		start > /dev/null 2>&1
+		echo_date "✅重启成功！"
 }
 
 check_status() {
