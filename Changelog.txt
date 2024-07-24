@@ -1,5 +1,8 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
+2.0.3
+   - fix     部分低内核路由器机型上使用临时目录模式无法正常使用的问题
+
 2.0.2
    - update     更新alist二进制至v3.36.0
 
