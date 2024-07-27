@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
@@ -98,9 +98,16 @@ String.prototype.myReplace = function(f, e){
 
 function init() {
 	show_menu(menu_hook);
+	set_skin();
 	register_event();
 	get_dbus_data();
 	check_status();
+}
+function set_skin(){
+	var SKN = '<% nvram_get("sc_skin"); %>';
+	if(SKN){
+		$("#app").attr("skin", '<% nvram_get("sc_skin"); %>');
+	}
 }
 
 function get_dbus_data(){
@@ -202,7 +209,7 @@ function isInnerIPFn(){
     return isInnerIp;
 }
 
-function getIpNum(ipAddress) {/*获取IP数*/
+function getIpNum(ipAddress) {
     var ip = ipAddress.split(".");
     var a = parseInt(ip[0]);
     var b = parseInt(ip[1]);
@@ -712,7 +719,7 @@ function mOut(obj){
 }
 </script>
 </head>
-<body id="app" skin='<% nvram_get("sc_skin"); %>' onload="init();">
+<body id="app" skin="ASUSWRT" onload="init();">
 	<div id="TopBanner"></div>
 	<div id="Loading" class="popup_bg"></div>
 	<div id="LoadingBar" class="popup_bar_bg_ks" style="z-index: 200;" >
