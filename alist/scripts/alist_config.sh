@@ -334,23 +334,23 @@ makeConfig() {
           if [ "${configHttps}" == "true" ]; then
             echo_date "⚠️网站URL：${alist_site_url} 来自ddnsto！"
             echo_date "⚠️你需要关闭alist的https，不然将导致无法访问面板！"
-            echo_date "⚠️本次插件启动不会将此网站URL写入配置，下次请更正，继续..."
-            dbus set alist_url_error=1
-          else
-            configSiteUrl=${alist_site_url}
+            #echo_date "⚠️本次插件启动不会将此网站URL写入配置，下次请更正，继续..."
+            #dbus set alist_url_error=1
+          #else
+            #configSiteUrl=${alist_site_url}
           fi
         else
           # ddns，根据情况判断
           if [ -n "${MATCH_3}" -a "${configHttps}" != "true" ]; then
             echo_date "⚠️网站URL：${alist_site_url} 格式为https！"
             echo_date "⚠️你需要启用alist的https功能，不然会导致面alist部分功能出现问题！"
-            echo_date "⚠️本次插件启动不会将此网站URL写入配置，下次请更正，继续..."
-            dbus set alist_url_error=1
+            #echo_date "⚠️本次插件启动不会将此网站URL写入配置，下次请更正，继续..."
+            #dbus set alist_url_error=1
           elif [ -n "${MATCH_4}" -a "${configHttps}" == "true" ]; then
             echo_date "⚠️网站URL：${alist_site_url} 格式为http！"
             echo_date "⚠️你需要启用alist的https，或者更改网站URL为http协议，不然将导致无法访问面板！"
-            echo_date "⚠️本次插件启动不会将此网站URL写入配置，下次请更正，继续..."
-            dbus set alist_url_error=1
+            #echo_date "⚠️本次插件启动不会将此网站URL写入配置，下次请更正，继续..."
+            #dbus set alist_url_error=1
           else
             # 路由器中使用网站URL的话，还必须配置端口
             if [ -n "${MATCH_3}" ]; then
@@ -363,13 +363,15 @@ makeConfig() {
             if [ -z "${MATCH_5}" ]; then
               echo_date "⚠️网站URL：${alist_site_url} 端口配置错误！"
               echo_date "⚠️你需要为网站URL配置端口:${rightPort}，不然会导致面alist部分功能出现问题！"
-              echo_date "⚠️本次插件启动不会将此网站URL写入配置，下次请更正，继续..."
-              dbus set alist_url_error=1
-            else
-              configSiteUrl=${alist_site_url}
+              #echo_date "⚠️本次插件启动不会将此网站URL写入配置，下次请更正，继续..."
+              #dbus set alist_url_error=1
+            #else
+              #configSiteUrl=${alist_site_url}
             fi
           fi
         fi
+        # 只要网址正确就写入配置，只检测提示，不阻止写入。2024年11月6日修改
+        configSiteUrl=${alist_site_url}
       fi
     fi
   else
