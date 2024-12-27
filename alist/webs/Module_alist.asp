@@ -16,18 +16,16 @@
 <link rel="stylesheet" type="text/css" href="/js/table/table.css">
 <link rel="stylesheet" type="text/css" href="/res/layer/theme/default/layer.css">
 <link rel="stylesheet" type="text/css" href="/res/softcenter.css">
-<script language="JavaScript" type="text/javascript" src="/state.js"></script>
-<script language="JavaScript" type="text/javascript" src="/popup.js"></script>
-<script language="JavaScript" type="text/javascript" src="/help.js"></script>
-<script language="JavaScript" type="text/javascript" src="/js/jquery.js"></script>
-<script language="JavaScript" type="text/javascript" src="/js/httpApi.js"></script>
-<script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
-<script language="JavaScript" type="text/javascript" src="/general.js"></script>
-<script language="JavaScript" type="text/javascript" src="/js/table/table.js"></script>
-<script language="JavaScript" type="text/javascript" src="/res/softcenter.js"></script>
-<script language="JavaScript" type="text/javascript" src="/help.js"></script>
-<script language="JavaScript" type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
-<script language="JavaScript" type="text/javascript" src="/validator.js"></script>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/state.js"></script>
+<script type="text/javascript" src="/popup.js"></script>
+<script type="text/javascript" src="/help.js"></script>
+<script type="text/javascript" src="/general.js"></script>
+<script type="text/javascript" language="JavaScript" src="/js/table/table.js"></script>
+<script type="text/javascript" src="/res/softcenter.js"></script>
+<script type="text/javascript" src="/help.js"></script>
+<script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
+<script type="text/javascript" src="/validator.js"></script>
 <style>
 a:focus {
 	outline: none;
