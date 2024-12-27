@@ -540,8 +540,8 @@ start() {
     echo_date "ℹ️检测到首次启动插件，生成用户和密码..."
     echo_date "ℹ️初始化操作较耗时，请耐心等待..."
     /koolshare/bin/alist --data ${AlistBaseDir} admin random >${AlistBaseDir}/admin.account 2>&1
-    local USER=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*username" | awk '{print $NF}')
-    local PASS=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*password" | awk '{print $NF}')
+    local USER=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*username" | tail -n 1 | awk '{print $NF}')
+    local PASS=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*password" | tail -n 1 | awk '{print $NF}')
     if [ -n "${USER}" -a -n "${PASS}" ]; then
       echo_date "---------------------------------"
       echo_date "😛alist面板用户：${USER}"
@@ -685,8 +685,8 @@ random_password() {
   # 1. 重新生成密码
   echo_date "🔍重新生成alist面板的用户和随机密码..."
   /koolshare/bin/alist --data ${AlistBaseDir} admin random > ${AlistBaseDir}/admin.account 2>&1
-  local USER=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*username" | awk '{print $NF}')
-  local PASS=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*password" | awk '{print $NF}')
+  local USER=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*username" | tail -n 1 | awk '{print $NF}')
+  local PASS=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*password" | tail -n 1 | awk '{print $NF}')
   if [ -n "${USER}" -a -n "${PASS}" ]; then
     echo_date "---------------------------------"
     echo_date "😛alist面板用户：${USER}"
