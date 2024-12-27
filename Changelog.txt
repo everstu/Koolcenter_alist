@@ -1,5 +1,9 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
+2.2.3
+   - fix     首次安装密码显示错误的问题
+   - log     优化日志显示
+
 2.2.2
    - fix     首次安装不显示初始化密码的问题
 

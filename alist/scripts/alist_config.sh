@@ -535,12 +535,13 @@ start() {
   # 4. gen config.json
   makeConfig
 
-  # 5. 检测首次运行，给出账号密码
+  # 5. set is first run
   if [ ! -f "${AlistBaseDir}/data.db" ]; then
     echo_date "ℹ️检测到首次启动插件，生成用户和密码..."
+    echo_date "ℹ️初始化操作较耗时，请耐心等待..."
     /koolshare/bin/alist --data ${AlistBaseDir} admin random >${AlistBaseDir}/admin.account 2>&1
-    local USER=$(cat ${AlistBaseDir}/admin.account | grep -E "^username" | awk '{print $2}')
-    local PASS=$(cat ${AlistBaseDir}/admin.account | grep -E "^password" | awk '{print $2}')
+    local USER=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*username" | awk '{print $NF}')
+    local PASS=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*password" | awk '{print $NF}')
     if [ -n "${USER}" -a -n "${PASS}" ]; then
       echo_date "---------------------------------"
       echo_date "😛alist面板用户：${USER}"
@@ -684,8 +685,8 @@ random_password() {
   # 1. 重新生成密码
   echo_date "🔍重新生成alist面板的用户和随机密码..."
   /koolshare/bin/alist --data ${AlistBaseDir} admin random > ${AlistBaseDir}/admin.account 2>&1
-  local USER=$(cat ${AlistBaseDir}/admin.account | grep "username" | awk '{print $NF}')
-  local PASS=$(cat ${AlistBaseDir}/admin.account | grep "password" | awk '{print $NF}')
+  local USER=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*username" | awk '{print $NF}')
+  local PASS=$(cat ${AlistBaseDir}/admin.account | grep -E "^.*INFO.*password" | awk '{print $NF}')
   if [ -n "${USER}" -a -n "${PASS}" ]; then
     echo_date "---------------------------------"
     echo_date "😛alist面板用户：${USER}"
@@ -696,13 +697,13 @@ random_password() {
   else
     echo_date "⚠️面板账号密码获取失败！请重启路由后重试！"
   fi
-		#2. 关闭server进程
-		echo_date "重启alist进程..."
-		stop_process > /dev/null 2>&1
+  #2. 关闭server进程
+  echo_date "重启alist进程..."
+  stop_process > /dev/null 2>&1
 
-		# 3. 重启进程
-		start > /dev/null 2>&1
-		echo_date "✅重启成功！"
+  # 3. 重启进程
+  start > /dev/null 2>&1
+  echo_date "✅重启成功！"
 }
 
 check_status() {
