@@ -1,5 +1,8 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
+2.2.2
+   - fix     首次安装不显示初始化密码的问题
+
 2.2.1
    - fix     fix web loading error on 3006.102 fw
 

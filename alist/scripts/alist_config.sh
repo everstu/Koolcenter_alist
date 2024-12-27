@@ -538,7 +538,7 @@ start() {
   # 5. 检测首次运行，给出账号密码
   if [ ! -f "${AlistBaseDir}/data.db" ]; then
     echo_date "ℹ️检测到首次启动插件，生成用户和密码..."
-    /koolshare/bin/alist --data ${AlistBaseDir} admin >${AlistBaseDir}/admin.account 2>&1
+    /koolshare/bin/alist --data ${AlistBaseDir} admin random >${AlistBaseDir}/admin.account 2>&1
     local USER=$(cat ${AlistBaseDir}/admin.account | grep -E "^username" | awk '{print $2}')
     local PASS=$(cat ${AlistBaseDir}/admin.account | grep -E "^password" | awk '{print $2}')
     if [ -n "${USER}" -a -n "${PASS}" ]; then
