@@ -7,7 +7,7 @@
 
 
 ## 项目地址
-https://github.com/alist-org/alist
+https://github.com/AlistGo/alist
 
 ## 官方信息  
 
