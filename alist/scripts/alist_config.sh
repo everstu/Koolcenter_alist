@@ -499,7 +499,7 @@ start_process() {
   else
     echo_date "🟠启动 alist 进程..."
     rm -rf /tmp/alist.pid
-    start-stop-daemon --start --quiet --make-pidfile --pidfile /tmp/alist.pid --background --startas /bin/bash -- -c "/koolshare/bin/alist --data ${AlistBaseDir} server >${ALIST_RUN_LOG} 2>&1"
+    start-stop-daemon --start --quiet --make-pidfile --pidfile /tmp/alist.pid --background --startas /bin/sh -- -c "exec /koolshare/bin/alist --data ${AlistBaseDir} server >${ALIST_RUN_LOG} 2>&1"
     detect_running_status alist
   fi
 }
