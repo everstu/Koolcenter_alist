@@ -1,7 +1,7 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
 2.2.7
-   - update     更新alist二进制至v3.42.0
+   - update     更新alist二进制至v3.43.0（fix:115网盘错误 Add:115开放平台）
 
 2.2.6
    - update     fix alist process start failed in some newer model
