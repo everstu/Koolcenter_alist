@@ -7,5 +7,5 @@
     "module": "alist", 
     "tags": "云同步", 
     "title": "Alist 文件列表", 
-    "version": "2.2.7"
+    "version": "2.2.8"
 }
