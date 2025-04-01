@@ -442,7 +442,7 @@ makeConfig() {
 #检查已开启插件
 check_enable_plugin() {
   echo_date "ℹ️当前已开启如下插件："
-  echo_date "➡️"$(dbus listall | grep 'enable=1' | awk -F '_' '!a[$1]++' | awk -F '_' '{print "dbus get softcenter_module_"$1"_title"|"bash"}' | tr '\n' ',' | sed 's/,$/ /')
+  echo_date "➡️"$(dbus listall | grep 'enable=1' | awk -F '_' '!a[$1]++' | awk -F '_' '{print "dbus get softcenter_module_"$1"_title"|"sh"}' | tr '\n' ',' | sed 's/,$/ /')
 }
 
 #检查内存是否合规
