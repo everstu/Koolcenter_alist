@@ -6,6 +6,7 @@ alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 AlistBaseDir=/koolshare/alist
 LOG_FILE=/tmp/upload/alist_log.txt
 LOCK_FILE=/var/lock/alist.lock
+ALIST_RUN_LOG=/tmp/upload/alist_run_log.txt
 configRunPath='/koolshare/alist/' #运行时db等文件存放目录 默认放到/koolshare/目录下
 BASH=${0##*/}
 ARGS=$@
@@ -395,47 +396,47 @@ makeConfig() {
   fi
 
   config='{
-			"force":false,
-			"jwt_secret":"random generated",
-			"token_expires_in":'${configTokenExpiresIn}',
-			"site_url":"'${configSiteUrl}'",
-			"cdn":"'${configCdn}'",
-			"database":
-				{
-					"type":"sqlite3",
-					"host":"","port":0,
-					"user":"",
-					"password":"",
-					"name":"",
-					"db_file":"'${configRunPath}'data.db",
-					"table_prefix":"x_",
-					"ssl_mode":""
-				},
-			"scheme":
-				{
-					"address":"'${BINDADDR}'",
-					"http_port":'${configPort}',
-					"https_port":'${configHttpsPort}',
-					"force_https":'${configForceHttps}',
-					"cert_file":"'${configCertFile}'",
-					"key_file":"'${configKeyFile}'",
-					"unix_file":""
-				},
-			"temp_dir":"'${configRunPath}'temp",
-			"bleve_dir":"'${configRunPath}'bleve",
-			"log":
-				{
-					"enable":false,
-					"name":"'${configRunPath}'alist.log",
-					"max_size":10,
-					"max_backups":5,
-					"max_age":28,
-					"compress":false
-				},
-			"delayed_start": '${configDelayedStart}',
-			"max_connections":'${cofigMaxConnections}',
-			"tls_insecure_skip_verify": '${configCheckSslCert}'
-			}'
+"force":false,
+"jwt_secret":"random generated",
+"token_expires_in":'${configTokenExpiresIn}',
+"site_url":"'${configSiteUrl}'",
+"cdn":"'${configCdn}'",
+"database":
+	{
+		"type":"sqlite3",
+		"host":"","port":0,
+		"user":"",
+		"password":"",
+		"name":"",
+		"db_file":"'${configRunPath}'data.db",
+		"table_prefix":"x_",
+		"ssl_mode":""
+	},
+"scheme":
+	{
+		"address":"'${BINDADDR}'",
+		"http_port":'${configPort}',
+		"https_port":'${configHttpsPort}',
+		"force_https":'${configForceHttps}',
+		"cert_file":"'${configCertFile}'",
+		"key_file":"'${configKeyFile}'",
+		"unix_file":""
+	},
+"temp_dir":"'${configRunPath}'temp",
+"bleve_dir":"'${configRunPath}'bleve",
+"log":
+	{
+		"enable":false,
+		"name":"'${ALIST_RUN_LOG}'",
+		"max_size":1,
+		"max_backups":1,
+		"max_age":7,
+		"compress":true
+	},
+"delayed_start": '${configDelayedStart}',
+"max_connections":'${cofigMaxConnections}',
+"tls_insecure_skip_verify": '${configCheckSslCert}'
+}'
   echo "${config}" >${AlistBaseDir}/config.json
 }
 
@@ -474,7 +475,6 @@ check_memory() {
 }
 
 start_process() {
-  ALIST_RUN_LOG=/tmp/upload/alist_run_log.txt
   rm -rf ${ALIST_RUN_LOG}
   if [ "${alist_watchdog}" == "1" ]; then
     echo_date "🟠启动 alist 进程，开启进程实时守护..."
@@ -484,7 +484,7 @@ start_process() {
 			source /koolshare/scripts/base.sh
 			CMD="/koolshare/bin/alist --data ${AlistBaseDir} server"
 			if test \${1} = 'start' ; then
-				exec >${ALIST_RUN_LOG} 2>&1
+				exec >/dev/null 2>&1
 				exec \$CMD
 			fi
 			exit 0
@@ -499,7 +499,7 @@ start_process() {
   else
     echo_date "🟠启动 alist 进程..."
     rm -rf /tmp/alist.pid
-    start-stop-daemon --start --quiet --make-pidfile --pidfile /tmp/alist.pid --background --startas /bin/sh -- -c "exec /koolshare/bin/alist --data ${AlistBaseDir} server >${ALIST_RUN_LOG} 2>&1"
+    start-stop-daemon --start --quiet --make-pidfile --pidfile /tmp/alist.pid --background --startas /bin/sh -- -c "exec /koolshare/bin/alist --data ${AlistBaseDir} server >/dev/null 2>&1"
     detect_running_status alist
   fi
 }
@@ -590,7 +590,7 @@ stop_plugin() {
   stop_process
 
   # 2. remove log
-  rm -rf /tmp/upload/alist_run_log.txt
+  rm -rf $ALIST_RUN_LOG
 
   # 3. close port
   close_port

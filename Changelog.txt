@@ -1,5 +1,8 @@
 KoolCenter Alist Changelog for HND platform
 ===========================================
+2.3.0
+   - fix     修复请求日志过大可能导致路由器崩溃的问题
+
 2.2.9
    - update     更新alist二进制至v3.45.0
 
