@@ -426,7 +426,7 @@ makeConfig() {
 "bleve_dir":"'${configRunPath}'bleve",
 "log":
 	{
-		"enable":false,
+		"enable":true,
 		"name":"'${ALIST_RUN_LOG}'",
 		"max_size":1,
 		"max_backups":1,
