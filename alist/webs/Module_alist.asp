@@ -725,7 +725,7 @@ function mOut(obj){
 			<tr>
 				<td height="100">
 					<div id="loading_block_title" style="margin:10px auto;margin-left:10px;width:85%; font-size:12pt;"></div>
-					<div id="loading_block_spilt" style="margin:10px 0 10px 5px;" class="loading_block_spilt">
+					<div id="loading_block_spilt" style="margin:10px 0 10px 5px;padding-left: 30px;" class="loading_block_spilt">
 						<li><font color="#ffcc00">请等待日志显示完毕，并出现自动关闭按钮！</font></li>
 						<li><font color="#ffcc00">在此期间请不要刷新本页面，不然可能导致问题！</font></li>
 					</div>
